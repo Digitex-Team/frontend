@@ -134,16 +134,6 @@ const rightCablePaths = [
   { d: "M 770 126 C 840 126, 870 228, 908 228", dur: "2.7s" },
 ];
 
-const popularTags: string[] = [
-  "ChatGPT Plus",
-  "Canva Pro",
-  "Netflix 4K",
-  "CapCut Pro",
-  "Midjourney",
-  "Claude Pro",
-  "Windows 11",
-];
-
 export function HeroInteractiveNetwork() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
@@ -154,11 +144,6 @@ export function HeroInteractiveNetwork() {
     const params = new URLSearchParams();
     if (searchQuery.trim()) params.set("search", searchQuery.trim());
     router.push(`/products${params.toString() ? `?${params.toString()}` : ""}`);
-  };
-
-  const handleTagClick = (tag: string) => {
-    setSearchQuery(tag);
-    router.push(`/products?search=${encodeURIComponent(tag)}`);
   };
 
   return (

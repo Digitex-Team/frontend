@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MessageCircle, ArrowUpRight, Sparkles } from "lucide-react";
+import { MessageCircle, ArrowUpRight } from "lucide-react";
 import { siteConfig } from "@/data/siteConfig";
 
 function DiscordIcon({ className }: { className?: string }) {
@@ -88,11 +88,6 @@ export function HomeContactSection() {
       <div className="glow-orb-cyan w-[450px] h-[450px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-30 pointer-events-none" aria-hidden="true" />
 
       <div className="relative z-10 text-center max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 rounded-full bg-cyan/10 border border-cyan/30 px-3.5 py-1 text-xs font-bold text-cyan mb-3">
-          <Sparkles className="h-3.5 w-3.5" />
-          <span>Assistance & Contact Direct</span>
-        </div>
-
         <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
           Besoin d&apos;aide ou d&apos;une commande personnalisée ?
         </h2>
@@ -111,9 +106,8 @@ export function HomeContactSection() {
                 href={channel.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`glass-elevated flex items-center justify-between gap-3 px-5 py-4 rounded-2xl hover:border-[#00BFFF]/60 transition-all duration-300 group hover:-translate-y-0.5 ${
-                  isLast ? "sm:col-span-2 lg:col-span-1" : ""
-                }`}
+                className={`glass-elevated flex items-center justify-between gap-3 px-5 py-4 rounded-2xl hover:border-[#00BFFF]/60 transition-all duration-300 group hover:-translate-y-0.5 ${isLast ? "sm:col-span-2 lg:col-span-1" : ""
+                  }`}
               >
                 <div className="flex items-center gap-3.5 min-w-0">
                   <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">

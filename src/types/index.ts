@@ -20,12 +20,20 @@ export interface Product {
   id: string;
   slug: string;
   name: string;
+  subtitle?: string; // e.g. "Par Google", "GPT-4o, o1, etc."
   tagline: string;
-  category: ProductCategory;
+  category: ProductCategory | string;
   categoryLabel: string;
   shortDesc: string;
   fullDesc: string;
-  brandColor?: string;
+  price?: number; // e.g. 2400
+  currency?: string; // "DZD"
+  duration?: string; // e.g. "1 Mois", "1 An", "200 Go"
+  features: string[]; // e.g. ["Accès complet", "Derniers modèles"]
+  image?: string; // path to logo
+  brandColor?: string; // e.g. "#10a37f" (ChatGPT green), "#D97706" (Claude orange), "#00BFFF" (iCloud)
+  isPopular?: boolean;
+  hasTierSelector?: boolean;
   accentGlow?: string;
   badge?: string;
   isFeatured?: boolean;
@@ -36,7 +44,6 @@ export interface Product {
   inStock: boolean;
   warranty: string; // e.g. "Garantie complète 30 jours"
   plans: SubscriptionTier[];
-  features: string[];
   activationSteps: string[];
   faq: ProductFaq[];
 }
