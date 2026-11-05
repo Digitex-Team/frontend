@@ -1,0 +1,185 @@
+"use client";
+
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export interface SelectOption {
+  value: string;
+  label: string;
+  icon?: React.ReactNode;
+  badge?: string;
+}
+
+interface CustomSelectProps {
+  options: SelectOption[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  variant?: "default" | "ghost" | "hero";
+  className?: string;
+  triggerClassName?: string;
+  dropdownClassName?: string;
+  icon?: React.ReactNode;
+}
+
+export function CustomSelect({
+  options,
+  value,
+  onChange,
+  placeholder = "Sélectionner...",
+  variant = "default",
+  className,
+  triggerClassName,
+  dropdownClassName,
+  icon,
+}: CustomSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  const handleSelect = (val: string) => {
+    onChange(val);
+    setIsOpen(false);
+  };
+
+  const variantTriggerStyles = {
+    default:
+      "bg-[#101B2C] border-[#1F2E45] hover:border-cyan/40 text-white rounded-xl px-3.5 py-2.5 shadow-sm focus:border-cyan focus:ring-1 focus:ring-cyan",
+    ghost:
+      "bg-transparent border-transparent hover:bg-white/5 text-silver hover:text-white rounded-lg px-3 py-2",
+    hero:
+      "bg-[#0E1726] md:bg-transparent border border-white/10 md:border-none rounded-xl md:rounded-none px-3.5 py-2 text-silver hover:text-white hover:bg-white/5 md:hover:bg-transparent",
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className={cn("relative inline-block text-left select-none", className)}
+    >
+      {/* Trigger Button */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          "flex w-full items-center justify-between gap-2.5 text-xs font-semibold transition-all duration-200 cursor-pointer border",
+          variantTriggerStyles[variant],
+          isOpen && "border-cyan/60 shadow-[0_0_15px_rgba(0,191,255,0.2)]",
+          triggerClassName
+        )}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+      >
+        <div className="flex items-center gap-2 truncate">
+          {icon && <span className="text-cyan shrink-0">{icon}</span>}
+          {selectedOption?.icon && (
+            <span className="text-cyan shrink-0">{selectedOption.icon}</span>
+          )}
+          <span className="truncate text-white">
+            {selectedOption ? selectedOption.label : placeholder}
+          </span>
+        </div>
+
+        <ChevronDown
+          className={cn(
+            "h-4 w-4 text-silver/60 transition-transform duration-200 shrink-0",
+            isOpen && "rotate-180 text-cyan"
+          )}
+        />
+      </button>
+
+      {/* Modern Glassmorphic Dropdown Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: -6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: -6 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className={cn(
+              "absolute z-50 mt-2 min-w-[200px] w-full max-h-64 overflow-y-auto rounded-2xl bg-[#0E1726]/95 border border-[#1F2E45] p-1.5 shadow-[0_12px_40px_rgba(5,7,12,0.9),0_0_25px_rgba(0,191,255,0.15)] backdrop-blur-xl focus:outline-none",
+              dropdownClassName
+            )}
+            role="listbox"
+          >
+            <div className="space-y-1">
+              {options.map((option) => {
+                const isSelected = option.value === value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => handleSelect(option.value)}
+                    className={cn(
+                      "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-xs font-medium transition-all duration-150 text-left cursor-pointer",
+                      isSelected
+                        ? "bg-electric/25 text-white font-bold border border-cyan/30 shadow-[0_0_12px_rgba(0,191,255,0.2)]"
+                        : "text-silver/80 hover:bg-white/5 hover:text-white"
+                    )}
+                    role="option"
+                    aria-selected={isSelected}
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      {option.icon && (
+                        <span
+                          className={cn(
+                            "shrink-0",
+                            isSelected ? "text-cyan" : "text-silver/50"
+                          )}
+                        >
+                          {option.icon}
+                        </span>
+                      )}
+                      <span className="truncate">{option.label}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {option.badge && (
+                        <span className="rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] text-silver/60">
+                          {option.badge}
+                        </span>
+                      )}
+                      {isSelected && (
+                        <Check className="h-3.5 w-3.5 text-cyan shrink-0" />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
