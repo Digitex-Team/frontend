@@ -137,15 +137,6 @@ const rightCablePaths = [
   { d: "M 770 126 C 840 126, 870 228, 908 228", dur: "2.7s" },
 ];
 
-const categoryOptions = [
-  { value: "all", label: "Toutes les catégories" },
-  { value: "ai", label: "Outils IA" },
-  { value: "streaming", label: "Streaming 4K" },
-  { value: "design", label: "Design & Vidéo" },
-  { value: "utilities", label: "VPN & Sécurité" },
-  { value: "software", label: "Clés & Logiciels" },
-];
-
 const popularTags = [
   "ChatGPT Plus",
   "Canva Pro",
@@ -197,9 +188,6 @@ export function HeroInteractiveNetwork() {
     setSearchQuery(tag);
     router.push(`/products?search=${encodeURIComponent(tag)}`);
   };
-
-  const selectedCategoryLabel =
-    categoryOptions.find((c) => c.value === selectedCategory)?.label || "Toutes les catégories";
 
   return (
     <section className="relative min-h-[580px] lg:min-h-[640px] max-h-[750px] flex flex-col justify-between py-6 md:py-8 lg:py-10 bg-[#05070C] border-b border-[#101B2C] overflow-hidden">
@@ -323,60 +311,6 @@ export function HeroInteractiveNetwork() {
                   placeholder="Rechercher un service, outil IA ou abonnement..."
                   className="w-full bg-transparent border-none outline-none text-white placeholder-[#C8D5E5]/40 text-xs sm:text-sm px-2.5 md:px-3"
                 />
-              </div>
-
-              {/* Custom Category Dropdown */}
-              <div ref={dropdownRef} className="relative shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-1.5 text-xs md:text-sm text-[#C8D5E5] px-2.5 sm:px-3.5 py-1.5 md:py-2 rounded-full hover:bg-white/5 border-l border-[#C8D5E5]/15 shrink-0 transition-colors cursor-pointer select-none"
-                >
-                  <SlidersHorizontal className="w-3.5 h-3.5 text-cyan shrink-0 hidden sm:inline" />
-                  <span className="truncate max-w-[90px] sm:max-w-[125px]">
-                    {selectedCategoryLabel}
-                  </span>
-                  <ChevronDown
-                    className={`w-3.5 h-3.5 text-[#C8D5E5]/60 transition-transform duration-200 shrink-0 ${isDropdownOpen ? "rotate-180 text-cyan" : ""
-                      }`}
-                  />
-                </button>
-
-                {/* Animated Dropdown Menu */}
-                <AnimatePresence>
-                  {isDropdownOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                      transition={{ duration: 0.15, ease: "easeOut" }}
-                      className="absolute right-0 top-full mt-2 w-52 rounded-xl bg-[#101B2C] border border-[#C8D5E5]/20 shadow-2xl p-1.5 z-50 backdrop-blur-xl"
-                    >
-                      <div className="space-y-1">
-                        {categoryOptions.map((opt) => {
-                          const isSelected = selectedCategory === opt.value;
-                          return (
-                            <button
-                              key={opt.value}
-                              type="button"
-                              onClick={() => {
-                                setSelectedCategory(opt.value);
-                                setIsDropdownOpen(false);
-                              }}
-                              className={`flex w-full items-center justify-between px-3 py-2 text-xs rounded-lg transition-colors cursor-pointer ${isSelected
-                                ? "bg-electric/25 text-white font-semibold border border-cyan/30"
-                                : "text-[#C8D5E5]/80 hover:bg-white/5 hover:text-white"
-                                }`}
-                            >
-                              <span>{opt.label}</span>
-                              {isSelected && <Check className="w-3.5 h-3.5 text-cyan" />}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
 
               {/* Primary Action Button */}
