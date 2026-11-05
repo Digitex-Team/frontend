@@ -74,11 +74,11 @@ export function CustomSelect({
 
   const variantTriggerStyles = {
     default:
-      "bg-[#101B2C] border-[#1F2E45] hover:border-cyan/40 text-white rounded-xl px-3.5 py-2.5 shadow-sm focus:border-cyan focus:ring-1 focus:ring-cyan",
+      "glass-base border-white/10 hover:border-cyan/40 text-white rounded-xl px-3.5 py-2.5 shadow-sm focus:border-cyan focus:ring-1 focus:ring-cyan",
     ghost:
       "bg-transparent border-transparent hover:bg-white/5 text-silver hover:text-white rounded-lg px-3 py-2",
     hero:
-      "bg-[#0E1726] md:bg-transparent border border-white/10 md:border-none rounded-xl md:rounded-none px-3.5 py-2 text-silver hover:text-white hover:bg-white/5 md:hover:bg-transparent",
+      "glass-base md:bg-transparent border border-white/10 md:border-none rounded-xl md:rounded-none px-3.5 py-2 text-silver hover:text-white hover:bg-white/5 md:hover:bg-transparent",
   };
 
   return (
@@ -126,7 +126,7 @@ export function CustomSelect({
             exit={{ opacity: 0, scale: 0.96, y: -6 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             className={cn(
-              "absolute z-50 mt-2 min-w-[200px] w-full max-h-64 overflow-y-auto rounded-2xl bg-[#0E1726]/95 border border-[#1F2E45] p-1.5 shadow-[0_12px_40px_rgba(5,7,12,0.9),0_0_25px_rgba(0,191,255,0.15)] backdrop-blur-xl focus:outline-none",
+              "absolute z-50 mt-2 min-w-[200px] w-full max-h-64 overflow-y-auto rounded-2xl glass-elevated border border-white/15 p-1.5 shadow-[0_12px_40px_rgba(5,7,12,0.9),0_0_25px_rgba(0,191,255,0.15)] focus:outline-none",
               dropdownClassName
             )}
             role="listbox"

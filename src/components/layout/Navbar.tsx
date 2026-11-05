@@ -12,7 +12,7 @@ const navLinks = [
   { label: "Accueil", href: "/" },
   { label: "Abonnements", href: "/products" },
   { label: "Comment ça marche", href: "/#how-it-works" },
-  { label: "Contact", href: "/contact" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 function DesktopNavLinks() {
@@ -26,7 +26,7 @@ function DesktopNavLinks() {
           <Link
             key={item.href}
             href={item.href}
-            className={`relative px-4 py-2 text-sm font-semibold transition-colors duration-200 rounded-lg hover:text-white ${isActive ? "text-cyan" : "text-silver hover:bg-white/5"
+            className={`relative px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-full hover:text-white ${isActive ? "text-cyan bg-white/5" : "text-silver hover:bg-white/5"
               }`}
           >
             <span>{item.label}</span>
@@ -49,7 +49,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#05070C]/90 border-b border-[#101B2C] transition-all">
+      <header className="sticky top-0 z-40 w-full glass-base border-b border-white/10 transition-all">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-20 items-center justify-between">
             {/* Left: Brand Logo */}
@@ -104,7 +104,7 @@ export function Navbar() {
                 href={cleanWhatsAppUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-electric hover:bg-electric-hover text-white px-4 py-2.5 text-xs sm:text-sm font-bold shadow-[0_0_18px_rgba(7,91,219,0.45)] hover:shadow-[0_0_25px_rgba(7,91,219,0.7)] transition active:scale-95"
+                className="inline-flex items-center gap-2 rounded-xl glass-button-primary text-white px-4 py-2.5 text-xs sm:text-sm font-bold transition active:scale-95"
               >
                 <MessageCircle className="h-4 w-4 fill-current text-white" />
                 <span className="hidden xs:inline">WhatsApp Express</span>
@@ -115,7 +115,7 @@ export function Navbar() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(true)}
-                className="md:hidden rounded-xl border border-navy-border bg-navy p-2.5 text-silver hover:text-white hover:border-cyan/40 transition"
+                className="md:hidden rounded-xl glass-button-secondary p-2.5 text-silver hover:text-white transition"
                 aria-label="Ouvrir le menu"
               >
                 <Menu className="h-5 w-5" />

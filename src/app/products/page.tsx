@@ -48,9 +48,12 @@ function CatalogContent() {
   }, [urlCategory, setSelectedCategory]);
 
   return (
-    <div className="py-12 md:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative py-12 md:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Ambient glows */}
+      <div className="glow-orb-blue w-[500px] h-[500px] -top-20 -left-20 opacity-50" aria-hidden="true" />
+      <div className="glow-orb-cyan w-[400px] h-[400px] top-1/3 -right-20 opacity-40" aria-hidden="true" />
       {/* Page Header */}
-      <div className="mb-10 text-center sm:text-left">
+      <div className="mb-10 text-center sm:text-left relative z-10">
         <div className="inline-flex items-center gap-2 rounded-full border border-cyan/30 bg-cyan/10 px-3.5 py-1 text-xs font-bold text-cyan mb-3">
           <Sparkles className="h-3.5 w-3.5" />
           <span>Catalogue Officiel Digitex</span>
@@ -75,7 +78,7 @@ function CatalogContent() {
       />
 
       {/* Products Grid or Empty State */}
-      <div className="mt-10">
+      <div className="mt-10 relative z-10">
         {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProducts.map((p) => (

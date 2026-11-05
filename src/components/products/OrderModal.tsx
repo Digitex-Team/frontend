@@ -85,7 +85,7 @@ export function OrderModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={resetAndClose}
-            className="fixed inset-0 bg-black/85 backdrop-blur-md"
+            className="fixed inset-0 bg-black/70 backdrop-blur-xl"
           />
 
           {/* Modal Container */}
@@ -94,7 +94,7 @@ export function OrderModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 260 }}
-            className="relative w-full max-w-2xl rounded-2xl bg-[#0E1726] border border-[#1F2E45] shadow-2xl p-6 sm:p-8 z-10 my-auto text-left max-h-[92vh] overflow-y-auto"
+            className="relative w-full max-w-2xl rounded-3xl glass-elevated shadow-2xl p-6 sm:p-8 z-10 my-auto text-left max-h-[92vh] overflow-y-auto"
           >
             {/* Close Button */}
             <button
@@ -141,8 +141,8 @@ export function OrderModal({
                           onClick={() => onSelectPlan(plan)}
                           className={`flex flex-col text-left p-3 rounded-xl border transition-all cursor-pointer ${
                             isSelected
-                              ? "bg-electric/20 border-cyan shadow-[0_0_15px_rgba(0,191,255,0.25)]"
-                              : "bg-[#101B2C] border-[#1F2E45] hover:border-white/20"
+                              ? "bg-electric/20 border-cyan shadow-[0_0_15px_rgba(0,191,255,0.25)] backdrop-blur-md"
+                              : "bg-white/5 border-white/10 backdrop-blur-md hover:border-white/20"
                           }`}
                         >
                           <div className="flex items-center justify-between w-full">
@@ -185,7 +185,7 @@ export function OrderModal({
                           value={formData.customerName}
                           onChange={(e) => onUpdateField("customerName", e.target.value)}
                           placeholder="Ex: Mohamed Benali"
-                          className="w-full rounded-xl bg-navy border border-navy-border px-3.5 py-2.5 text-sm text-white placeholder-silver/40 focus:border-cyan focus:outline-none focus:ring-1 focus:ring-cyan transition"
+                          className="w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-sm text-white placeholder-white/30 focus:border-[#00BFFF]/70 focus:outline-none focus:ring-1 focus:ring-[#00BFFF]/50 focus:bg-white/[0.08] backdrop-blur-md transition"
                         />
                       </div>
 
@@ -199,7 +199,7 @@ export function OrderModal({
                           value={formData.whatsapp}
                           onChange={(e) => onUpdateField("whatsapp", e.target.value)}
                           placeholder="Ex: 0555 12 34 56"
-                          className="w-full rounded-xl bg-navy border border-navy-border px-3.5 py-2.5 text-sm text-white placeholder-silver/40 focus:border-cyan focus:outline-none focus:ring-1 focus:ring-cyan transition"
+                          className="w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-sm text-white placeholder-white/30 focus:border-[#00BFFF]/70 focus:outline-none focus:ring-1 focus:ring-[#00BFFF]/50 focus:bg-white/[0.08] backdrop-blur-md transition"
                         />
                       </div>
                     </div>
@@ -213,7 +213,7 @@ export function OrderModal({
                         value={formData.email}
                         onChange={(e) => onUpdateField("email", e.target.value)}
                         placeholder="Ex: mohamed.benali@gmail.com"
-                        className="w-full rounded-xl bg-navy border border-navy-border px-3.5 py-2.5 text-sm text-white placeholder-silver/40 focus:border-cyan focus:outline-none focus:ring-1 focus:ring-cyan transition"
+                        className="w-full rounded-xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-sm text-white placeholder-white/30 focus:border-[#00BFFF]/70 focus:outline-none focus:ring-1 focus:ring-[#00BFFF]/50 focus:bg-white/[0.08] backdrop-blur-md transition"
                       />
                     </div>
                   </div>
@@ -232,8 +232,8 @@ export function OrderModal({
                             onClick={() => onUpdateField("paymentMethod", pm.id as PaymentMethod)}
                             className={`flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
                               isSelected
-                                ? "bg-electric/15 border-cyan shadow-[0_0_12px_rgba(0,191,255,0.2)]"
-                                : "bg-navy border-navy-border hover:border-white/20"
+                                ? "bg-electric/15 border-cyan shadow-[0_0_12px_rgba(0,191,255,0.2)] backdrop-blur-md"
+                                : "bg-white/5 border-white/10 backdrop-blur-md hover:border-white/20"
                             }`}
                           >
                             <div className="shrink-0 mt-0.5">{renderPaymentIcon(pm.id)}</div>

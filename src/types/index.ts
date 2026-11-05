@@ -65,7 +65,14 @@ export interface SiteConfig {
   description: string;
   whatsappNumber: string;
   whatsappDisplay: string;
+  whatsappSalesNumber?: string;
+  whatsappSalesDisplay?: string;
+  whatsappSupportNumber?: string;
+  whatsappSupportDisplay?: string;
   telegramUsername: string;
+  discordUrl?: string;
+  instagramUrl?: string;
+  facebookUrl?: string;
   email: string;
   phone: string;
   location: string;

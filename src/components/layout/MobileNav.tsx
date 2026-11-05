@@ -17,7 +17,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
     { label: "Accueil", href: "/" },
     { label: "Abonnements", href: "/products" },
     { label: "Comment ça marche", href: "/#how-it-works" },
-    { label: "Contact & Support", href: "/contact" },
+    { label: "Contact & Support", href: "/#contact" },
   ];
 
   return (

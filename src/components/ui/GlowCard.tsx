@@ -29,7 +29,7 @@ export function GlowCard({
       whileHover={interactive ? { y: -3 } : undefined}
       transition={{ duration: 0.2 }}
       className={cn(
-        "relative rounded-2xl bg-[#101B2C] border border-[#1F2E45] p-6 transition-all duration-300",
+        "relative rounded-2xl glass-elevated border border-white/10 p-6 transition-all duration-300",
         interactive && glowStyles[glowColor],
         className
       )}

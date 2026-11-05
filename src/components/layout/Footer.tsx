@@ -3,173 +3,99 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MessageCircle, Send, Mail, Phone, ShieldCheck, Zap, Clock, Heart } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { siteConfig } from "@/data/siteConfig";
+
+function DiscordIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+    </svg>
+  );
+}
+
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
+function FacebookIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  );
+}
 
 export function Footer() {
   const currentYear = 2026;
+  const whatsappUrl = `https://wa.me/${siteConfig.whatsappNumber.replace(/[^0-9]/g, "")}`;
 
   return (
-    <footer className="border-t border-[#101B2C] bg-[#05070C] pt-16 pb-12 relative overflow-hidden">
-      {/* Ambient background glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-gradient-to-b from-electric/10 to-transparent blur-2xl pointer-events-none" />
+    <footer className="w-full border-t border-[#C8D5E5]/10 bg-[#05070C] py-4 md:py-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+        {/* 1. Left Column: Copyright */}
+        <p className="text-[#C8D5E5]/60 text-xs tracking-wide">
+          © {currentYear} {siteConfig.name}. Tous droits réservés.
+        </p>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 pb-12 border-b border-white/5">
-          {/* Col 1: Brand & Bio */}
-          <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-3">
-              <Image
-                src="/logo.png"
-                alt="Digitex Logo"
-                width={48}
-                height={48}
-                className="h-10 w-10 object-contain drop-shadow-[0_0_15px_rgba(0,191,255,0.45)]"
-              />
-              <span className="text-2xl font-black tracking-tight text-white">
-                Digitex<span className="text-cyan">.</span>
-              </span>
-            </Link>
-            <p className="text-sm leading-relaxed text-silver/70">
-              La référence en Algérie pour l&apos;achat d&apos;abonnements digitaux, outils d&apos;intelligence artificielle et licences logicielles authentiques au meilleur tarif.
-            </p>
-            <div className="flex items-center gap-3 pt-2">
-              <a
-                href={`https://wa.me/${siteConfig.whatsappNumber.replace(/[^0-9]/g, "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-10 w-10 rounded-xl bg-navy border border-navy-border flex items-center justify-center text-silver hover:text-white hover:border-cyan hover:shadow-[0_0_15px_rgba(0,191,255,0.3)] transition"
-                aria-label="WhatsApp"
-              >
-                <MessageCircle className="h-4 w-4" />
-              </a>
-              <a
-                href={`https://t.me/${siteConfig.telegramUsername}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-10 w-10 rounded-xl bg-navy border border-navy-border flex items-center justify-center text-silver hover:text-white hover:border-cyan hover:shadow-[0_0_15px_rgba(0,191,255,0.3)] transition"
-                aria-label="Telegram"
-              >
-                <Send className="h-4 w-4" />
-              </a>
-              <a
-                href={`mailto:${siteConfig.email}`}
-                className="h-10 w-10 rounded-xl bg-navy border border-navy-border flex items-center justify-center text-silver hover:text-white hover:border-cyan hover:shadow-[0_0_15px_rgba(0,191,255,0.3)] transition"
-                aria-label="Email"
-              >
-                <Mail className="h-4 w-4" />
-              </a>
-            </div>
-          </div>
+        {/* 2. Middle Column: Logo & Name */}
+        <Link href="/" className="flex items-center gap-2 group">
+          <Image
+            src="/logo.png"
+            alt="Digitex"
+            width={22}
+            height={22}
+            className="object-contain drop-shadow-[0_0_8px_rgba(0,191,255,0.4)] group-hover:scale-105 transition-transform"
+          />
+          <span className="font-bold text-white tracking-wider text-sm">
+            Digitex<span className="text-[#00BFFF]">.</span>
+          </span>
+        </Link>
 
-          {/* Col 2: Navigation Rapide */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-bold uppercase tracking-wider text-white">
-              Catalogue & Services
-            </h4>
-            <ul className="space-y-2.5 text-sm text-silver/70">
-              <li>
-                <Link href="/products?category=ai" className="hover:text-cyan transition">
-                  Intelligence Artificielle (ChatGPT, Claude)
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=streaming" className="hover:text-cyan transition">
-                  Streaming & Cinéma (Netflix 4K, Spotify)
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=design" className="hover:text-cyan transition">
-                  Design & Création (Canva, CapCut, Adobe)
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=utilities" className="hover:text-cyan transition">
-                  Licences Windows, Office & NordVPN
-                </Link>
-              </li>
-              <li>
-                <Link href="/products" className="hover:text-cyan transition text-cyan font-medium">
-                  → Voir tout le catalogue
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 3: Pourquoi Choisir Digitex */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-bold uppercase tracking-wider text-white">
-              Nos Engagements
-            </h4>
-            <ul className="space-y-3 text-sm text-silver/80">
-              <li className="flex items-start gap-2.5">
-                <Zap className="h-4 w-4 text-cyan shrink-0 mt-0.5" />
-                <span>Livraison ultra rapide en 5 à 15 minutes</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span>Garantie de remplacement 100% sur toute la durée</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <Clock className="h-4 w-4 text-electric shrink-0 mt-0.5" />
-                <span>Support réactif 7j/7 par WhatsApp & Telegram</span>
-              </li>
-            </ul>
-
-            <div className="pt-2">
-              <span className="text-xs uppercase tracking-wider font-bold text-silver/60">
-                Paiements acceptés en Algérie
-              </span>
-              <div className="mt-2 flex flex-wrap gap-2">
-                <span className="px-2.5 py-1 rounded bg-[#101B2C] border border-white/10 text-[11px] font-semibold text-white">
-                  BaridiMob
-                </span>
-                <span className="px-2.5 py-1 rounded bg-[#101B2C] border border-white/10 text-[11px] font-semibold text-white">
-                  CCP
-                </span>
-                <span className="px-2.5 py-1 rounded bg-[#101B2C] border border-white/10 text-[11px] font-semibold text-white">
-                  Binance Pay (USDT)
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Col 4: Contact & Support */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-bold uppercase tracking-wider text-white">
-              Assistance Client
-            </h4>
-            <div className="space-y-2.5 text-sm text-silver/70">
-              <p className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-cyan" />
-                <span className="text-white font-medium">{siteConfig.whatsappDisplay}</span>
-              </p>
-              <p className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-cyan" />
-                <span>{siteConfig.email}</span>
-              </p>
-              <p className="text-xs text-silver/50 pt-2">
-                Horaires de traitement : 09h00 - 00h00
-              </p>
-            </div>
-
-            <div className="pt-2">
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 rounded-xl border border-navy-border bg-navy hover:bg-navy-light text-white px-4 py-2 text-xs font-semibold hover:border-cyan/40 transition"
-              >
-                <span>Accéder au support d&apos;aide</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-silver/50">
-          <p>© {currentYear} {siteConfig.name}. Tous droits réservés. Conçu pour le commerce digital algérien.</p>
-          <p className="flex items-center gap-1.5">
-            Fait avec <Heart className="h-3.5 w-3.5 text-red-500 fill-current" /> pour les créateurs & pros en Algérie
-          </p>
+        {/* 3. Right Column: Social Media Icons Only */}
+        <div className="flex items-center gap-4 text-[#C8D5E5]/70">
+          <a
+            href={siteConfig.discordUrl || "https://discord.gg/digitex"}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Discord"
+            className="hover:text-[#00BFFF] transition-colors duration-200"
+          >
+            <DiscordIcon className="h-4 w-4" />
+          </a>
+          <a
+            href={siteConfig.instagramUrl || "https://instagram.com/digitex.store"}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+            className="hover:text-[#00BFFF] transition-colors duration-200"
+          >
+            <InstagramIcon className="h-4 w-4" />
+          </a>
+          <a
+            href={siteConfig.facebookUrl || "https://facebook.com/digitex.storedz"}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Facebook"
+            className="hover:text-[#00BFFF] transition-colors duration-200"
+          >
+            <FacebookIcon className="h-4 w-4" />
+          </a>
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="WhatsApp"
+            className="hover:text-[#00BFFF] transition-colors duration-200"
+          >
+            <MessageCircle className="h-4 w-4" />
+          </a>
         </div>
       </div>
     </footer>

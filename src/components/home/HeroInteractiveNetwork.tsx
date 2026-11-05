@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Search,
-  ChevronDown,
   Tv,
   ShieldCheck,
   KeyRound,
@@ -15,8 +14,6 @@ import {
   Cloud,
   Terminal,
   ArrowRight,
-  Check,
-  SlidersHorizontal,
 } from "lucide-react";
 
 interface ServiceNode {
@@ -137,7 +134,7 @@ const rightCablePaths = [
   { d: "M 770 126 C 840 126, 870 228, 908 228", dur: "2.7s" },
 ];
 
-const popularTags = [
+const popularTags: string[] = [
   "ChatGPT Plus",
   "Canva Pro",
   "Netflix 4K",
@@ -150,38 +147,13 @@ const popularTags = [
 export function HeroInteractiveNetwork() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
-
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    }
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setIsDropdownOpen(false);
-    }
-    if (isDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", handleKeyDown);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isDropdownOpen]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     if (searchQuery.trim()) params.set("search", searchQuery.trim());
-    if (selectedCategory !== "all") params.set("category", selectedCategory);
-    router.push(`/products?${params.toString()}`);
+    router.push(`/products${params.toString() ? `?${params.toString()}` : ""}`);
   };
 
   const handleTagClick = (tag: string) => {
@@ -256,9 +228,9 @@ export function HeroInteractiveNetwork() {
                   className={`w-full cursor-default select-none transition-transform duration-300 ${node.offsetClass}`}
                 >
                   <div
-                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-[#101B2C]/70 border backdrop-blur-md shadow-md transition-all duration-300 ${isHovered
-                      ? "border-[#00BFFF]/50 shadow-[0_0_15px_rgba(0,191,255,0.25)] bg-[#101B2C]/90"
-                      : "border-[#C8D5E5]/15 hover:border-[#00BFFF]/40"
+                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl glass-base transition-all duration-300 ${isHovered
+                      ? "border-[#00BFFF]/60 shadow-[0_0_20px_rgba(0,191,255,0.3)] bg-navy/80"
+                      : "border-white/10 hover:border-[#00BFFF]/40"
                       }`}
                   >
                     <div
@@ -299,7 +271,7 @@ export function HeroInteractiveNetwork() {
             {/* The Shell */}
             <form
               onSubmit={handleSearchSubmit}
-              className="relative h-13 md:h-15 w-full rounded-full bg-[#101B2C]/80 border border-[#C8D5E5]/20 backdrop-blur-xl shadow-[0_10px_35px_rgba(5,7,12,0.8),0_0_20px_rgba(7,91,219,0.18)] focus-within:border-cyan focus-within:shadow-[0_0_30px_rgba(0,191,255,0.35)] p-1.5 flex items-center justify-between gap-1.5 md:gap-2 transition-all duration-300"
+              className="relative h-13 md:h-15 w-full rounded-full glass-elevated border border-white/20 p-1.5 flex items-center justify-between gap-1.5 md:gap-2 transition-all duration-300 focus-within:border-cyan/70 focus-within:shadow-[0_0_30px_rgba(0,191,255,0.4)]"
             >
               {/* Search Icon & Input */}
               <div className="flex items-center flex-1 h-full min-w-0">
@@ -316,7 +288,7 @@ export function HeroInteractiveNetwork() {
               {/* Primary Action Button */}
               <button
                 type="submit"
-                className="h-full px-4 sm:px-6 rounded-full bg-[#075BDB] hover:bg-[#075BDB]/90 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 shadow-[0_0_20px_rgba(7,91,219,0.5)] hover:shadow-[0_0_30px_rgba(0,191,255,0.6)] transition-all shrink-0 active:scale-95 cursor-pointer"
+                className="h-full px-5 sm:px-7 rounded-full glass-button-primary text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-all shrink-0 active:scale-95 cursor-pointer"
               >
                 <span>Explorer</span>
                 <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -348,9 +320,9 @@ export function HeroInteractiveNetwork() {
                   className={`w-full cursor-default select-none transition-transform duration-300 ${node.offsetClass}`}
                 >
                   <div
-                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-[#101B2C]/70 border backdrop-blur-md shadow-md transition-all duration-300 ${isHovered
-                      ? "border-[#00BFFF]/50 shadow-[0_0_15px_rgba(0,191,255,0.25)] bg-[#101B2C]/90"
-                      : "border-[#C8D5E5]/15 hover:border-[#00BFFF]/40"
+                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl glass-base transition-all duration-300 ${isHovered
+                      ? "border-[#00BFFF]/60 shadow-[0_0_20px_rgba(0,191,255,0.3)] bg-navy/80"
+                      : "border-white/10 hover:border-[#00BFFF]/40"
                       }`}
                   >
                     <div
@@ -488,7 +460,7 @@ export function HeroInteractiveNetwork() {
               return (
                 <div
                   key={`mobile-${node.id}`}
-                  className="flex items-center gap-2 p-2 rounded-xl bg-[#101B2C]/70 border border-[#C8D5E5]/15 cursor-default select-none"
+                  className="flex items-center gap-2 p-2 rounded-xl glass-base border border-white/10 cursor-default select-none"
                 >
                   <div
                     className="w-7 h-7 rounded-lg bg-[#05070C] border border-[#C8D5E5]/15 flex items-center justify-center shrink-0"

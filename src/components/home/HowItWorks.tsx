@@ -50,11 +50,11 @@ export function HowItWorks() {
           {steps.map((step) => (
             <div
               key={step.number}
-              className="relative rounded-2xl bg-[#0E1726] border border-[#1F2E45] p-8 flex flex-col justify-between hover:border-cyan/40 hover:shadow-[0_0_30px_-5px_rgba(0,191,255,0.2)] transition-all group"
+              className="relative rounded-3xl glass-elevated glass-glare overflow-hidden p-8 flex flex-col justify-between transition-all group"
             >
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="h-12 w-12 rounded-xl bg-navy border border-navy-border flex items-center justify-center group-hover:scale-110 transition duration-300">
+                  <div className="h-12 w-12 rounded-xl glass-button-secondary flex items-center justify-center group-hover:scale-110 transition duration-300">
                     {step.icon}
                   </div>
                   <span className="font-mono text-3xl font-black text-white/10 group-hover:text-cyan/20 transition">

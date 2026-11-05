@@ -76,7 +76,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         {/* Left Column: Visual & Activation Steps (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
           {/* Visual Container with Cyber Glow */}
-          <div className="relative rounded-3xl bg-[#0E1726] border border-[#1F2E45] p-8 text-center overflow-hidden shadow-[0_0_40px_-10px_rgba(7,91,219,0.25)]">
+          <div className="relative rounded-3xl glass-elevated p-8 text-center overflow-hidden shadow-[0_0_40px_-10px_rgba(7,91,219,0.25)]">
             <div
               className="absolute -top-24 -left-24 h-64 w-64 rounded-full blur-3xl pointer-events-none opacity-40"
               style={{ backgroundColor: product.brandColor || "#075BDB" }}
@@ -118,7 +118,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           </div>
 
           {/* Activation Process Steps */}
-          <div className="rounded-2xl bg-[#0E1726] border border-[#1F2E45] p-6">
+          <div className="rounded-2xl glass-base p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-2">
               <Zap className="h-4 w-4 text-cyan" />
               <span>Guide d&apos;activation rapide</span>
@@ -161,7 +161,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           </div>
 
           {/* Plan Duration Selector Box */}
-          <div className="rounded-2xl bg-[#0E1726] border border-cyan/30 p-6 shadow-[0_0_30px_-5px_rgba(0,191,255,0.15)]">
+          <div className="rounded-2xl glass-elevated border border-cyan/40 p-6 shadow-[0_0_30px_-5px_rgba(0,191,255,0.15)]">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold uppercase tracking-wider text-silver">
                 Sélectionnez votre formule :
@@ -180,8 +180,8 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                     onClick={() => setCurrentPlan(plan)}
                     className={`p-3.5 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
                       isSelected
-                        ? "bg-electric/25 border-cyan shadow-[0_0_20px_rgba(0,191,255,0.3)] ring-1 ring-cyan"
-                        : "bg-navy border-navy-border hover:border-white/20"
+                        ? "bg-electric/25 border-cyan shadow-[0_0_20px_rgba(0,191,255,0.3)] ring-1 ring-cyan backdrop-blur-md"
+                        : "bg-white/5 border-white/10 hover:border-white/20 backdrop-blur-md"
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -241,7 +241,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   href={whatsappDirectUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-xl border border-navy-border bg-navy hover:bg-navy-light p-3.5 text-emerald-400 hover:border-emerald-500/40 transition shrink-0"
+                  className="rounded-xl glass-button-secondary p-3.5 text-emerald-400 hover:text-emerald-300 transition shrink-0"
                   title="Poser une question sur WhatsApp"
                 >
                   <MessageCircle className="h-5 w-5 fill-current" />
@@ -251,7 +251,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           </div>
 
           {/* Key Features List */}
-          <div className="rounded-2xl bg-[#0E1726] border border-[#1F2E45] p-6">
+          <div className="rounded-2xl glass-base p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-2">
               <Layers className="h-4 w-4 text-cyan" />
               <span>Avantages & Inclus dans votre commande</span>
@@ -269,7 +269,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
           {/* FAQ Accordion */}
           {product.faq && product.faq.length > 0 && (
-            <div className="rounded-2xl bg-[#0E1726] border border-[#1F2E45] p-6">
+            <div className="rounded-2xl glass-base p-6">
               <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-2">
                 <HelpCircle className="h-4 w-4 text-cyan" />
                 <span>Questions Fréquentes (FAQ)</span>
@@ -281,7 +281,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   return (
                     <div
                       key={idx}
-                      className="rounded-xl bg-navy/60 border border-navy-border overflow-hidden"
+                      className="rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm overflow-hidden"
                     >
                       <button
                         onClick={() => toggleFaq(idx)}
