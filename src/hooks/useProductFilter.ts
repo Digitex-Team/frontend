@@ -22,9 +22,14 @@ export function useProductFilter(initialProducts: Product[]) {
         if (searchQuery.trim() !== "") {
           const query = searchQuery.toLowerCase().trim();
           const matchesName = product.name.toLowerCase().includes(query);
-          const matchesDesc = product.shortDesc.toLowerCase().includes(query) || product.fullDesc.toLowerCase().includes(query);
-          const matchesCategory = product.categoryLabel.toLowerCase().includes(query);
-          const matchesFeatures = product.features.some((f) => f.toLowerCase().includes(query));
+          const matchesDesc =
+            (product.shortDesc || product.fullDesc || product.subtitle || product.tagline || "")
+              .toLowerCase()
+              .includes(query);
+          const matchesCategory =
+            (product.categoryLabel || product.category || "").toLowerCase().includes(query);
+          const matchesFeatures =
+            product.features && product.features.some((f) => f.toLowerCase().includes(query));
 
           if (!matchesName && !matchesDesc && !matchesCategory && !matchesFeatures) {
             return false;
@@ -35,7 +40,10 @@ export function useProductFilter(initialProducts: Product[]) {
       })
       .sort((a, b) => {
         const getLowestPrice = (prod: Product) => {
-          return Math.min(...prod.plans.map((p) => p.priceDZD));
+          if (prod.plans && prod.plans.length > 0) {
+            return Math.min(...prod.plans.map((p) => p.priceDZD));
+          }
+          return prod.price || 0;
         };
 
         if (sortBy === "price-asc") {
@@ -45,12 +53,12 @@ export function useProductFilter(initialProducts: Product[]) {
           return getLowestPrice(b) - getLowestPrice(a);
         }
         if (sortBy === "rating") {
-          return b.rating - a.rating;
+          return (b.rating ?? 5) - (a.rating ?? 5);
         }
         // "popular"
         if (a.isBestseller && !b.isBestseller) return -1;
         if (!a.isBestseller && b.isBestseller) return 1;
-        return b.reviewsCount - a.reviewsCount;
+        return (b.reviewsCount ?? 0) - (a.reviewsCount ?? 0);
       });
   }, [initialProducts, selectedCategory, searchQuery, sortBy]);
 

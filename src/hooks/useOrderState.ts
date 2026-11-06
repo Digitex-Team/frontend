@@ -23,7 +23,17 @@ export function useOrderState() {
 
   const openOrder = useCallback((targetProduct: Product, initialPlan?: SubscriptionTier) => {
     setProduct(targetProduct);
-    const planToSet = initialPlan || targetProduct.plans.find((p) => p.isPopular) || targetProduct.plans[0];
+    const planToSet =
+      initialPlan ||
+      (targetProduct.plans && targetProduct.plans.length > 0
+        ? targetProduct.plans.find((p) => p.isPopular) || targetProduct.plans[0]
+        : {
+            id: `${targetProduct.id}-default`,
+            duration: targetProduct.duration || "1 Mois",
+            durationMonths: 1,
+            priceDZD: targetProduct.price || 0,
+            accountType: "Compte Privé" as const,
+          });
     setSelectedPlan(planToSet);
     setOrderComplete(false);
     setIsSubmitting(false);

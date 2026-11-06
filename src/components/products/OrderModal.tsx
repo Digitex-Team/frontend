@@ -114,9 +114,11 @@ export function OrderModal({
                     <Badge variant="cyan" size="sm">
                       Commande Express ⚡
                     </Badge>
-                    <span className="text-xs text-silver/60">
-                      Livraison {product.deliveryTime}
-                    </span>
+                    {product.deliveryTime && (
+                      <span className="text-xs text-silver/60">
+                        Livraison {product.deliveryTime}
+                      </span>
+                    )}
                   </div>
                   <h2 className="text-2xl font-black text-white tracking-tight">
                     {product.name}
@@ -132,7 +134,7 @@ export function OrderModal({
                     1. Choisissez votre formule / durée
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                    {product.plans.map((plan) => {
+                    {(product.plans && product.plans.length > 0 ? product.plans : [selectedPlan]).map((plan) => {
                       const isSelected = selectedPlan.id === plan.id;
                       return (
                         <button

@@ -21,15 +21,15 @@ export interface Product {
   slug: string;
   name: string;
   subtitle?: string; // e.g. "Par Google", "GPT-4o, o1, etc."
-  tagline: string;
+  tagline?: string;
   category: ProductCategory | string;
-  categoryLabel: string;
-  shortDesc: string;
-  fullDesc: string;
+  categoryLabel?: string;
+  shortDesc?: string;
+  fullDesc?: string;
   price?: number; // e.g. 2400
   currency?: string; // "DZD"
   duration?: string; // e.g. "1 Mois", "1 An", "200 Go"
-  features: string[]; // e.g. ["Accès complet", "Derniers modèles"]
+  features: string[]; // e.g. ["Accès complet", "Derniers modèles"] - Avantages & Inclus
   image?: string; // path to logo
   brandColor?: string; // e.g. "#10a37f" (ChatGPT green), "#D97706" (Claude orange), "#00BFFF" (iCloud)
   isPopular?: boolean;
@@ -38,14 +38,14 @@ export interface Product {
   badge?: string;
   isFeatured?: boolean;
   isBestseller?: boolean;
-  rating: number;
-  reviewsCount: number;
-  deliveryTime: string; // e.g. "5 - 15 minutes"
-  inStock: boolean;
-  warranty: string; // e.g. "Garantie complète 30 jours"
-  plans: SubscriptionTier[];
-  activationSteps: string[];
-  faq: ProductFaq[];
+  rating?: number;
+  reviewsCount?: number;
+  deliveryTime?: string; // e.g. "5 - 15 minutes"
+  inStock?: boolean;
+  warranty?: string; // e.g. "Garantie complète 30 jours"
+  plans?: SubscriptionTier[];
+  activationSteps?: string[];
+  faq?: ProductFaq[];
 }
 
 export type PaymentMethod = 'baridimob' | 'ccp' | 'binance' | 'hand';

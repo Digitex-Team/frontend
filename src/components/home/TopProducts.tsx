@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Flame, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { Product, SubscriptionTier, ProductCategory } from "@/types";
 import { productsCatalog } from "@/data/products";
 import { ProductCard } from "@/components/products/ProductCard";
@@ -50,25 +50,6 @@ export function TopProducts({ onOrderClick }: TopProductsProps) {
         </Link>
       </div>
 
-      {/* Tabs Filter */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none">
-        {tabs.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`rounded-full px-4 py-2 text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${isActive
-                  ? "bg-gradient-to-r from-[#075BDB]/80 to-[#00BFFF]/40 border border-[#00BFFF]/60 text-white shadow-[0_0_15px_rgba(0,191,255,0.3)] backdrop-blur-md"
-                  : "bg-white/5 border border-white/10 text-silver/80 backdrop-blur-md hover:bg-white/10 hover:border-white/20 hover:text-white"
-                }`}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
-
       {/* Products Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProducts.slice(0, 6).map((product) => (
@@ -78,17 +59,6 @@ export function TopProducts({ onOrderClick }: TopProductsProps) {
             onOrderClick={onOrderClick}
           />
         ))}
-      </div>
-
-      {/* Bottom CTA Banner */}
-      <div className="mt-12 text-center">
-        <Link
-          href="/products"
-          className="inline-flex items-center gap-2 rounded-xl glass-button-secondary text-silver hover:text-white px-6 py-3 text-sm font-semibold transition"
-        >
-          <Sparkles className="h-4 w-4 text-cyan" />
-          <span>Explorer les autres abonnements disponibles</span>
-        </Link>
       </div>
     </section>
   );
