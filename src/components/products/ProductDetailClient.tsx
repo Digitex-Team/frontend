@@ -22,6 +22,7 @@ import { Product, SubscriptionTier } from "@/types";
 import { siteConfig } from "@/data/siteConfig";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/utils";
+import { OrderModal } from "@/components/products/OrderModal";
 
 // Vector Icons for Messengers (matching design system)
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -84,6 +85,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [currentPlan, setCurrentPlan] = useState<SubscriptionTier>(defaultPlan);
 
   const [copied, setCopied] = useState<boolean>(false);
+  const [orderModalOpen, setOrderModalOpen] = useState<boolean>(false);
 
   // Ref to scroll to order section from mobile sticky bar
   const orderSectionRef = useRef<HTMLDivElement>(null);
@@ -412,29 +414,40 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 </div>
               </div>
 
-              {/* Quick Copy button */}
-              <button
-                type="button"
-                onClick={handleCopyMessage}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${
-                  copied
-                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-                    : "bg-white/5 text-silver/80 hover:text-white hover:bg-white/10 border border-white/10"
-                }`}
-                title="Copier le texte de commande"
-              >
-                {copied ? (
-                  <>
-                    <Check className="h-3.5 w-3.5 text-emerald-400" />
-                    <span>Copié !</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Copier détails</span>
-                  </>
-                )}
-              </button>
+              {/* Actions: Direct Checkout & Quick Copy */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setOrderModalOpen(true)}
+                  className="px-4 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#075BDB] to-[#00BFFF] hover:from-[#064ec0] hover:to-[#00a6dd] text-white text-xs sm:text-sm font-bold shadow-[0_0_20px_rgba(0,191,255,0.4)] flex items-center gap-2 cursor-pointer transition active:scale-95"
+                >
+                  <Zap className="w-4 h-4" />
+                  <span>Commander</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCopyMessage}
+                  className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                    copied
+                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                      : "bg-white/5 text-silver/80 hover:text-white hover:bg-white/10 border border-white/10"
+                  }`}
+                  title="Copier le texte de commande"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-3.5 w-3.5 text-emerald-400" />
+                      <span>Copié !</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">Détails</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* =====================================================================
@@ -592,6 +605,16 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           </a>
         </div>
       </div>
+
+      {/* Direct Guest Checkout Modal with Live Backend Integration */}
+      <OrderModal
+        isOpen={orderModalOpen}
+        onClose={() => setOrderModalOpen(false)}
+        product={product}
+        selectedTier={currentPlan}
+        productId={product.id}
+        tierId={currentPlan.id}
+      />
     </div>
   );
 }

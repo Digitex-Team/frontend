@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { productsCatalog } from "@/data/products";
 import { siteConfig } from "@/data/siteConfig";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
+import { getLiveProductBySlug } from "@/lib/api";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -17,7 +18,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = productsCatalog.find((p) => p.slug === slug);
+  const product = await getLiveProductBySlug(slug);
 
   if (!product) {
     return {
@@ -27,14 +28,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${product.name} — Abonnement Algérie | ${siteConfig.name}`,
-    description: `${product.shortDesc} Disponible en Algérie avec paiement sécurisé BaridiMob & CCP. Livraison 5 à 15 minutes.`,
+    description: `${product.shortDesc || product.name} Disponible en Algérie avec paiement sécurisé BaridiMob & CCP. Livraison 5 à 15 minutes.`,
   };
 }
 
-// Inner async component wrapped in Suspense for Next.js Instant Navigation & PPR
+// Inner async component wrapped in Suspense for Next.js Instant Navigation
 async function ProductDetailContent({ params }: Props) {
   const { slug } = await params;
-  const product = productsCatalog.find((p) => p.slug === slug);
+  const product = await getLiveProductBySlug(slug);
 
   if (!product) {
     notFound();

@@ -1,19 +1,35 @@
 "use client";
 
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Sparkles, PackageSearch, RotateCcw } from "lucide-react";
 import { productsCatalog } from "@/data/products";
-import { ProductCategory } from "@/types";
+import { Product, ProductCategory } from "@/types";
 import { useProductFilter } from "@/hooks/useProductFilter";
 import { ProductFilters } from "@/components/products/ProductFilters";
 import { ProductCard } from "@/components/products/ProductCard";
 import { Button } from "@/components/ui/Button";
+import { getLiveProducts } from "@/lib/api";
 
 function CatalogContent() {
   const searchParams = useSearchParams();
   const urlCategory = searchParams.get("category") as ProductCategory | null;
+
+  // Initialize with static catalog for instant layout, then sync with live Supabase backend
+  const [catalogItems, setCatalogItems] = useState<Product[]>(productsCatalog);
+
+  useEffect(() => {
+    let isMounted = true;
+    getLiveProducts().then((liveData) => {
+      if (isMounted && liveData && liveData.length > 0) {
+        setCatalogItems(liveData);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const {
     selectedCategory,
@@ -25,7 +41,7 @@ function CatalogContent() {
     filteredProducts,
     totalCount,
     resetFilters,
-  } = useProductFilter(productsCatalog);
+  } = useProductFilter(catalogItems);
 
   // Sync category if URL param is passed
   useEffect(() => {

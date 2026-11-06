@@ -1,15 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { ProductCategory } from "@/types";
+import { Product, ProductCategory } from "@/types";
 import { productsCatalog } from "@/data/products";
 import { ProductCard } from "@/components/products/ProductCard";
+import { getLiveProducts } from "@/lib/api";
 
 export function TopProducts() {
   const [activeTab, setActiveTab] = useState<ProductCategory>("all");
+  const [catalogItems, setCatalogItems] = useState<Product[]>(productsCatalog);
+
+  useEffect(() => {
+    let isMounted = true;
+    getLiveProducts().then((liveData) => {
+      if (isMounted && liveData && liveData.length > 0) {
+        setCatalogItems(liveData);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const tabs: { id: ProductCategory; label: string }[] = [
     { id: "all", label: "Tous les tops" },
@@ -19,8 +33,8 @@ export function TopProducts() {
     { id: "utilities", label: "Licences & VPN" },
   ];
 
-  const filteredProducts = productsCatalog.filter((item) => {
-    if (activeTab === "all") return item.isBestseller || item.isFeatured;
+  const filteredProducts = catalogItems.filter((item) => {
+    if (activeTab === "all") return item.isPopular || item.isBestseller || item.isFeatured;
     return item.category === activeTab;
   });
 
@@ -53,65 +67,37 @@ export function TopProducts() {
           prefetch={true}
           className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-cyan hover:text-white transition group shrink-0"
         >
-          <span>Voir tout le catalogue ({productsCatalog.length})</span>
+          <span>Voir tout le catalogue ({catalogItems.length})</span>
           <ArrowRight className="h-4 w-4 group-hover:translate-x-1.5 transition-transform" />
         </Link>
       </motion.div>
 
-      {/* Category Pills (Mobile horizontal scroll friendly) */}
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-        className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 sm:mb-8 scrollbar-none"
-      >
+      {/* Tabs */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 sm:mb-8 no-scrollbar">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all whitespace-nowrap cursor-pointer ${
                 isActive
-                  ? "bg-gradient-to-r from-[#075BDB] to-[#00BFFF]/70 text-white shadow-[0_0_15px_rgba(0,191,255,0.35)] border border-cyan/40"
-                  : "bg-white/5 border border-white/10 text-silver/70 hover:text-white hover:bg-white/10"
+                  ? "bg-[#075BDB] text-white shadow-[0_0_20px_rgba(7,91,219,0.5)] border border-[#00BFFF]/50"
+                  : "bg-white/5 text-silver/70 hover:text-white hover:bg-white/10 border border-white/5"
               }`}
             >
               {tab.label}
             </button>
           );
         })}
-      </motion.div>
+      </div>
 
-      {/* Products Grid with Staggered Scroll Animations */}
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
-        variants={{
-          hidden: { opacity: 0 },
-          visible: {
-            opacity: 1,
-            transition: {
-              staggerChildren: 0.08,
-            },
-          },
-        }}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"
-      >
-        {filteredProducts.slice(0, 6).map((product) => (
-          <motion.div
-            key={product.id}
-            variants={{
-              hidden: { opacity: 0, y: 25 },
-              visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
-            }}
-          >
-            <ProductCard product={product} />
-          </motion.div>
+      {/* Product Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+        {filteredProducts.slice(0, 6).map((prod) => (
+          <ProductCard key={prod.id} product={prod} />
         ))}
-      </motion.div>
+      </div>
     </section>
   );
 }
