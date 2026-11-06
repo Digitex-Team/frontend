@@ -6,46 +6,29 @@ import { BrandsMarquee } from "@/components/home/BrandsMarquee";
 import { TopProducts } from "@/components/home/TopProducts";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { HomeContactSection } from "@/components/home/HomeContactSection";
-import { OrderModal } from "@/components/products/OrderModal";
-import { useOrderState } from "@/hooks/useOrderState";
 
 export default function HomePage() {
-  const {
-    isOpen,
-    product,
-    selectedPlan,
-    setSelectedPlan,
-    formData,
-    updateField,
-    openOrder,
-    closeOrder,
-    getWhatsAppMessageUrl,
-  } = useOrderState();
-
   return (
     <div className="relative overflow-hidden">
       {/* Ambient glow orbs — behind all content */}
-      <div className="glow-orb-blue w-[600px] h-[600px] -top-40 -left-40 opacity-70" aria-hidden="true" />
-      <div className="glow-orb-cyan w-[500px] h-[500px] top-[30%] -right-32 opacity-50" aria-hidden="true" />
-      <div className="glow-orb-blue w-[400px] h-[400px] bottom-[10%] left-1/4 opacity-40" aria-hidden="true" />
+      <div
+        className="glow-orb-blue w-[600px] h-[600px] -top-40 -left-40 opacity-70 pointer-events-none"
+        aria-hidden="true"
+      />
+      <div
+        className="glow-orb-cyan w-[500px] h-[500px] top-[30%] -right-32 opacity-50 pointer-events-none"
+        aria-hidden="true"
+      />
+      <div
+        className="glow-orb-blue w-[400px] h-[400px] bottom-[10%] left-1/4 opacity-40 pointer-events-none"
+        aria-hidden="true"
+      />
 
       <HeroInteractiveNetwork />
       <BrandsMarquee />
-      <TopProducts onOrderClick={openOrder} />
+      <TopProducts />
       <HowItWorks />
       <HomeContactSection />
-
-      {/* Global Checkout / Order Modal */}
-      <OrderModal
-        isOpen={isOpen}
-        onClose={closeOrder}
-        product={product}
-        selectedPlan={selectedPlan}
-        onSelectPlan={setSelectedPlan}
-        formData={formData}
-        onUpdateField={updateField}
-        getWhatsAppUrl={getWhatsAppMessageUrl}
-      />
     </div>
   );
 }

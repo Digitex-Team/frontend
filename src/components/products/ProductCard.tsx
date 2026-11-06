@@ -3,13 +3,13 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { Check, ChevronRight, Crown } from "lucide-react";
-import { Product, SubscriptionTier } from "@/types";
+import { Product } from "@/types";
 import { formatPrice } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
-  onOrderClick: (product: Product, plan?: SubscriptionTier) => void;
 }
 
 /**
@@ -199,17 +199,15 @@ function ProductBrandLogo({
   );
 }
 
-export function ProductCard({ product, onOrderClick }: ProductCardProps) {
-  // Determine default active plan
+export function ProductCard({ product }: ProductCardProps) {
+  // Determine default active plan or fallback price
   const defaultPlan =
     product.plans && product.plans.length > 0
       ? product.plans.find((p) => p.isPopular) || product.plans[0]
       : undefined;
 
-  // Pricing resolution
   const currentPrice = defaultPlan ? defaultPlan.priceDZD : (product.price || 0);
-
-  const isPopular = Boolean(product.isPopular);
+  const isPopular = Boolean(product.isPopular || product.isBestseller);
   const subtitle = product.subtitle || product.tagline || product.categoryLabel;
 
   // Features list: take first 2 bullets
@@ -219,106 +217,120 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
       : ["Accès officiel garanti", "Support technique 7j/7"];
 
   return (
-    <div className="group relative rounded-2xl p-4 md:p-5 bg-[#101B2C]/50 backdrop-blur-xl border border-white/10 hover:border-[#00BFFF]/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_15px_30px_rgba(5,7,12,0.8)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-visible">
-      {/* Subtle specular top glare overlay */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.04] to-transparent pointer-events-none" />
+    <motion.div
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.985 }}
+      transition={{ duration: 0.2 }}
+      className="h-full"
+    >
+      <Link
+        href={`/products/${product.slug}`}
+        prefetch={true}
+        className="group relative rounded-2xl p-4 md:p-5 bg-[#101B2C]/50 backdrop-blur-xl border border-white/10 hover:border-[#00BFFF]/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_15px_30px_rgba(5,7,12,0.8)] hover:shadow-[0_15px_35px_rgba(0,191,255,0.18)] transition-all duration-300 flex flex-col justify-between h-full overflow-hidden block"
+      >
+        {/* Subtle specular top glare overlay */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.05] via-transparent to-transparent pointer-events-none" />
 
-      {/* =========================================================================
-          A. TOP SECTION: App Squircle Icon (Left) + Details & Bullets (Right)
-          ========================================================================= */}
-      <div className="relative z-10 flex items-start gap-3.5 md:gap-4">
-        {/* 1. Backlit App Squircle Icon (Left) */}
-        <Link
-          href={`/products/${product.slug}`}
-          className="w-14 h-14 md:w-16 md:h-16 rounded-2xl relative shrink-0 flex items-center justify-center overflow-hidden bg-[#05070C]/80 border border-white/10 transition-transform duration-300 group-hover:scale-105"
-          aria-label={product.name}
-        >
-          {/* Accent Halo / Backlight corresponding to brand color */}
+        {/* =========================================================================
+            A. TOP SECTION: App Squircle Icon (Left) + Details & Bullets (Right)
+            ========================================================================= */}
+        <div className="relative z-10 flex items-start gap-3.5 md:gap-4">
+          {/* 1. Backlit App Squircle Icon */}
           <div
-            className="absolute inset-0 blur-lg opacity-40 transition-opacity duration-300 group-hover:opacity-65"
-            style={{ backgroundColor: product.brandColor || "#00BFFF" }}
-          />
+            className="w-13 h-13 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-2xl relative shrink-0 flex items-center justify-center overflow-hidden bg-[#05070C]/80 border border-white/10 transition-transform duration-300 group-hover:scale-105"
+            aria-label={product.name}
+          >
+            {/* Accent Halo / Backlight corresponding to brand color */}
+            <div
+              className="absolute inset-0 blur-lg opacity-40 transition-opacity duration-300 group-hover:opacity-75"
+              style={{ backgroundColor: product.brandColor || "#00BFFF" }}
+            />
 
-          {/* Logo element: High-resolution image if supplied, otherwise vector SVG */}
-          <div className="relative z-10 flex items-center justify-center w-full h-full p-2">
-            {product.image && product.image.startsWith("/") ? (
-              <Image
-                src={product.image}
-                alt={product.name}
-                width={40}
-                height={40}
-                className="object-contain"
-              />
-            ) : (
-              <ProductBrandLogo
-                slug={product.slug}
-                name={product.name}
-                color={product.brandColor}
-              />
-            )}
-          </div>
-        </Link>
-
-        {/* 2. Product Info & Bullets (Right / Middle) */}
-        <div className="flex-1 min-w-0">
-          {/* Popularity Badge (if isPopular) */}
-          {isPopular && (
-            <div className="mb-1">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#00BFFF]/10 border border-[#00BFFF]/30 text-[#00BFFF]">
-                <Crown className="w-3 h-3 text-[#00BFFF]" />
-                <span>Populaire</span>
-              </span>
+            {/* Logo element */}
+            <div className="relative z-10 flex items-center justify-center w-full h-full p-2">
+              {product.image && product.image.startsWith("/") ? (
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
+              ) : (
+                <ProductBrandLogo
+                  slug={product.slug}
+                  name={product.name}
+                  color={product.brandColor}
+                />
+              )}
             </div>
-          )}
+          </div>
 
-          {/* Title Header */}
-          <Link href={`/products/${product.slug}`} className="block group/title">
-            <h3 className="text-base md:text-lg font-bold text-white tracking-tight leading-snug group-hover/title:text-[#00BFFF] transition-colors truncate">
+          {/* 2. Product Info & Bullets */}
+          <div className="flex-1 min-w-0">
+            {/* Badges row */}
+            <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+              {isPopular && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#00BFFF]/10 border border-[#00BFFF]/30 text-[#00BFFF]">
+                  <Crown className="w-3 h-3 text-[#00BFFF]" />
+                  <span>Populaire</span>
+                </span>
+              )}
+              {product.deliveryTime && (
+                <span className="text-[10px] text-emerald-400 font-semibold hidden sm:inline">
+                  ⚡ {product.deliveryTime}
+                </span>
+              )}
+            </div>
+
+            {/* Title Header */}
+            <h3 className="text-base sm:text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#00BFFF] transition-colors truncate">
               {product.name}
             </h3>
-          </Link>
 
-          {/* Subtitle */}
-          {subtitle && (
-            <p className="text-xs text-[#C8D5E5]/60 mt-0.5 line-clamp-1">
-              {subtitle}
-            </p>
-          )}
+            {/* Subtitle */}
+            {subtitle && (
+              <p className="text-xs text-[#C8D5E5]/60 mt-0.5 line-clamp-1">
+                {subtitle}
+              </p>
+            )}
 
-          {/* Features List (2 concise bullets) */}
-          <ul className="mt-2.5 space-y-1">
-            {displayFeatures.map((feat, idx) => (
-              <li key={idx} className="flex items-center gap-1.5 text-xs text-[#C8D5E5]/90">
-                <Check className="w-3.5 h-3.5 text-[#00BFFF] shrink-0" strokeWidth={2.5} />
-                <span className="truncate">{feat}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {/* =========================================================================
-          B. BOTTOM ACTION BAR: Price Display (Left) + Commander CTA (Right)
-          ========================================================================= */}
-      <div className="relative z-10 mt-5 pt-4 border-t border-white/5 flex items-center justify-between gap-3">
-        {/* Left: Price Display */}
-        <div className="text-lg md:text-xl font-black text-white tracking-tight flex items-baseline gap-1">
-          <span>{formatPrice(currentPrice)}</span>
-          <span className="text-xs font-semibold text-[#00BFFF]">
-            {product.currency || "DZD"}
-          </span>
+            {/* Features List (2 concise bullets) */}
+            <ul className="mt-2.5 space-y-1">
+              {displayFeatures.map((feat, idx) => (
+                <li key={idx} className="flex items-center gap-1.5 text-xs text-[#C8D5E5]/90">
+                  <Check className="w-3.5 h-3.5 text-[#00BFFF] shrink-0" strokeWidth={2.5} />
+                  <span className="truncate">{feat}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        {/* Right: Glass Action Button */}
-        <button
-          type="button"
-          onClick={() => onOrderClick(product, defaultPlan)}
-          className="px-4 py-2 rounded-full bg-[#075BDB] hover:bg-[#075BDB]/90 text-white text-xs font-semibold flex items-center gap-1.5 shadow-[0_0_15px_rgba(7,91,219,0.35)] hover:shadow-[0_0_20px_rgba(0,191,255,0.45)] transition-all active:scale-95 shrink-0 cursor-pointer"
-        >
-          <span>Commander</span>
-          <ChevronRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
-    </div>
+        {/* =========================================================================
+            B. BOTTOM ACTION BAR: Price Display (Left) + "Voir l'offre" CTA (Right)
+            ========================================================================= */}
+        <div className="relative z-10 mt-5 pt-4 border-t border-white/5 flex items-center justify-between gap-3">
+          {/* Left: Price Display */}
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase font-semibold text-silver/50 tracking-wider">
+              {product.plans && product.plans.length > 1 ? "À partir de" : "Prix"}
+            </span>
+            <div className="text-lg md:text-xl font-black text-white tracking-tight flex items-baseline gap-1">
+              <span>{formatPrice(currentPrice)}</span>
+              <span className="text-xs font-semibold text-[#00BFFF]">
+                {product.currency || "DZD"}
+              </span>
+            </div>
+          </div>
+
+          {/* Right: Clean View Offer indicator */}
+          <div className="px-3.5 py-1.5 rounded-full bg-white/5 group-hover:bg-[#075BDB] border border-white/10 group-hover:border-[#00BFFF]/50 text-white text-xs font-semibold flex items-center gap-1 transition-all duration-300 shadow-sm group-hover:shadow-[0_0_15px_rgba(0,191,255,0.35)] shrink-0">
+            <span className="group-hover:text-white text-silver/80">Voir l&apos;offre</span>
+            <ChevronRight className="w-3.5 h-3.5 text-cyan group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+          </div>
+        </div>
+      </Link>
+    </motion.div>
   );
 }

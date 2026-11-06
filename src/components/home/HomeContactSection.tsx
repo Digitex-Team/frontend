@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { MessageCircle, ArrowUpRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { MessageCircle, ArrowUpRight, Sparkles } from "lucide-react";
 import { siteConfig } from "@/data/siteConfig";
 
 function DiscordIcon({ className }: { className?: string }) {
@@ -30,6 +31,14 @@ function FacebookIcon({ className }: { className?: string }) {
   );
 }
 
+function TelegramIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .36z" />
+    </svg>
+  );
+}
+
 export function HomeContactSection() {
   const whatsappSalesUrl = `https://wa.me/${(siteConfig.whatsappSalesNumber || siteConfig.whatsappNumber).replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
     "Bonjour Digitex, je souhaite passer une commande ou obtenir des informations commerciales."
@@ -47,6 +56,7 @@ export function HomeContactSection() {
       badge: "Ventes & Commandes",
       href: whatsappSalesUrl,
       icon: <MessageCircle className="h-5 w-5 text-[#25D366]" />,
+      colorClass: "hover:border-[#25D366]/50",
     },
     {
       id: "whatsapp-support",
@@ -55,6 +65,7 @@ export function HomeContactSection() {
       badge: "Assistance 7j/7",
       href: whatsappSupportUrl,
       icon: <MessageCircle className="h-5 w-5 text-[#00BFFF]" />,
+      colorClass: "hover:border-[#00BFFF]/50",
     },
     {
       id: "discord",
@@ -63,6 +74,7 @@ export function HomeContactSection() {
       badge: "Entraide & Annonces",
       href: siteConfig.discordUrl || "https://discord.gg/digitex",
       icon: <DiscordIcon className="h-5 w-5 text-[#5865F2]" />,
+      colorClass: "hover:border-[#5865F2]/50",
     },
     {
       id: "instagram",
@@ -71,6 +83,7 @@ export function HomeContactSection() {
       badge: "Nouveautés & DM",
       href: siteConfig.instagramUrl || "https://instagram.com/digitex.store",
       icon: <InstagramIcon className="h-5 w-5 text-[#E1306C]" />,
+      colorClass: "hover:border-[#E1306C]/50",
     },
     {
       id: "facebook",
@@ -79,43 +92,85 @@ export function HomeContactSection() {
       badge: "Page Officielle",
       href: siteConfig.facebookUrl || "https://facebook.com/digitex.storedz",
       icon: <FacebookIcon className="h-5 w-5 text-[#1877F2]" />,
+      colorClass: "hover:border-[#1877F2]/50",
+    },
+    {
+      id: "telegram",
+      title: "Canal Telegram",
+      subtitle: `@${siteConfig.telegramUsername || "digitex_dz"}`,
+      badge: "Offres Flash",
+      href: `https://t.me/${siteConfig.telegramUsername || "digitex_dz"}`,
+      icon: <TelegramIcon className="h-5 w-5 text-[#229ED9]" />,
+      colorClass: "hover:border-[#229ED9]/50",
     },
   ];
 
   return (
     <section id="contact" className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative scroll-mt-20">
       {/* Subtle ambient glows */}
-      <div className="glow-orb-cyan w-[450px] h-[450px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-30 pointer-events-none" aria-hidden="true" />
+      <div
+        className="glow-orb-cyan w-[450px] h-[450px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-25 pointer-events-none"
+        aria-hidden="true"
+      />
 
-      <div className="relative z-10 text-center max-w-3xl mx-auto">
-        <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-          Besoin d&apos;aide ou d&apos;une commande personnalisée ?
-        </h2>
+      <div className="relative z-10 text-center max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#00BFFF]/10 border border-[#00BFFF]/30 text-[#00BFFF] mb-3">
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Support & Commandes Immédiates</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            Besoin d&apos;aide ou d&apos;une commande personnalisée ?
+          </h2>
+          <p className="mt-2.5 text-xs sm:text-base text-silver/70 max-w-2xl mx-auto">
+            Notre équipe est disponible 7j/7 pour vous assister et activer vos abonnements immédiatement.
+          </p>
+        </motion.div>
 
-        <p className="mt-3 text-sm sm:text-base text-silver/70 max-w-2xl mx-auto">
-          Notre équipe est disponible 7j/7 pour vous assister et activer vos abonnements immédiatement.
-        </p>
-
-        {/* 5 Action Channel Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto mt-8 text-left">
-          {contactChannels.map((channel, idx) => {
-            const isLast = idx === 4;
-            return (
+        {/* 6 Action Channel Cards Grid */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.08,
+              },
+            },
+          }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 max-w-4xl mx-auto mt-8 sm:mt-10 text-left"
+        >
+          {contactChannels.map((channel) => (
+            <motion.div
+              key={channel.id}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+              }}
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.98 }}
+            >
               <a
-                key={channel.id}
                 href={channel.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`glass-elevated flex items-center justify-between gap-3 px-5 py-4 rounded-2xl hover:border-[#00BFFF]/60 transition-all duration-300 group hover:-translate-y-0.5 ${isLast ? "sm:col-span-2 lg:col-span-1" : ""
-                  }`}
+                className={`glass-elevated flex items-center justify-between gap-3 px-4 sm:px-5 py-3.5 sm:py-4 rounded-2xl border border-white/10 ${channel.colorClass} transition-all duration-300 group block h-full`}
               >
                 <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                     {channel.icon}
                   </div>
                   <div className="truncate">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-white tracking-tight block truncate group-hover:text-cyan transition-colors">
+                      <span className="text-xs sm:text-sm font-bold text-white tracking-tight block truncate group-hover:text-cyan transition-colors">
                         {channel.title}
                       </span>
                     </div>
@@ -129,9 +184,9 @@ export function HomeContactSection() {
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </div>
               </a>
-            );
-          })}
-        </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
