@@ -18,6 +18,12 @@ export interface DbCategory {
   _count?: { products: number };
 }
 
+export interface SmartSearchResult {
+  directMatches: Product[];
+  relatedMatches: Product[];
+  categoryName: string | null;
+}
+
 // Normalize API Base URL whether configured with or without '/api/v1'
 const RAW_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000").replace(/\/+$/, "");
 export const ROOT_SERVER_URL = RAW_URL.replace(/\/api\/v1$/, "");
@@ -104,6 +110,30 @@ export async function getLiveProducts(category?: string, search?: string, sortBy
     }
   } catch (_err) {}
   return [];
+}
+
+export async function smartSearchProducts(query: string): Promise<SmartSearchResult> {
+  const term = (query || "").trim();
+  if (!term) {
+    return { directMatches: [], relatedMatches: [], categoryName: null };
+  }
+  try {
+    const res = await apiClient.get("/products/smart-search", {
+      params: { q: term },
+    });
+    const data = res.data;
+    return {
+      directMatches: Array.isArray(data?.directMatches)
+        ? data.directMatches.map(mapBackendProductToFrontend)
+        : [],
+      relatedMatches: Array.isArray(data?.relatedMatches)
+        ? data.relatedMatches.map(mapBackendProductToFrontend)
+        : [],
+      categoryName: data?.categoryName || null,
+    };
+  } catch (_err) {
+    return { directMatches: [], relatedMatches: [], categoryName: null };
+  }
 }
 
 export async function getPaginatedProducts(query?: {

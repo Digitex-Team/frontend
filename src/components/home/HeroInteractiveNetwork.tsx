@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   Tv,
@@ -15,7 +15,14 @@ import {
   Cloud,
   Terminal,
   ArrowRight,
+  X,
+  Loader2,
+  Database,
+  Layers,
+  ChevronRight,
 } from "lucide-react";
+import { smartSearchProducts, SmartSearchResult } from "@/lib/api";
+import { formatPrice } from "@/lib/utils";
 
 interface ServiceNode {
   id: string;
@@ -136,31 +143,103 @@ const rightCablePaths = [
 export function HeroInteractiveNetwork() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [searchResult, setSearchResult] = useState<SmartSearchResult | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Debounce search input by 250ms
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery.trim());
+    }, 250);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  // Query Backend Database directly via smartSearchProducts
+  useEffect(() => {
+    if (!debouncedQuery) {
+      setSearchResult(null);
+      setIsDropdownOpen(false);
+      return;
+    }
+
+    let active = true;
+    setSearchLoading(true);
+    setIsDropdownOpen(true);
+
+    smartSearchProducts(debouncedQuery)
+      .then((res) => {
+        if (active) {
+          setSearchResult(res);
+          setSearchLoading(false);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setSearchLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [debouncedQuery]);
+
+  // Close on outside click or Escape
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsDropdownOpen(false);
     const params = new URLSearchParams();
     if (searchQuery.trim()) params.set("search", searchQuery.trim());
     router.push(`/products${params.toString() ? `?${params.toString()}` : ""}`);
   };
 
   return (
-    <section className="relative min-h-[540px] lg:min-h-[640px] max-h-[750px] flex flex-col justify-between py-6 md:py-8 lg:py-10 bg-[#05070C] border-b border-[#101B2C] overflow-hidden">
-      {/* Background Cyber Grid */}
-      <div
-        className="absolute inset-0 -z-20 pointer-events-none opacity-40"
-        style={{
-          backgroundImage: `linear-gradient(to right, rgba(16, 27, 44, 0.5) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 27, 44, 0.5) 1px, transparent 1px)`,
-          backgroundSize: "3.5rem 3.5rem",
-          maskImage: "radial-gradient(ellipse 65% 50% at 50% 50%, #000 65%, transparent 100%)",
-          WebkitMaskImage: "radial-gradient(ellipse 65% 50% at 50% 50%, #000 65%, transparent 100%)",
-        }}
-      />
+    <section className="relative min-h-[540px] lg:min-h-[640px] flex flex-col justify-between py-6 md:py-8 lg:py-10 bg-[#05070C] border-b border-[#101B2C]">
+      {/* Background Cyber Grid & Glows in overflow-hidden container */}
+      <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-40"
+          style={{
+            backgroundImage: `linear-gradient(to right, rgba(16, 27, 44, 0.5) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 27, 44, 0.5) 1px, transparent 1px)`,
+            backgroundSize: "3.5rem 3.5rem",
+            maskImage: "radial-gradient(ellipse 65% 50% at 50% 50%, #000 65%, transparent 100%)",
+            WebkitMaskImage: "radial-gradient(ellipse 65% 50% at 50% 50%, #000 65%, transparent 100%)",
+          }}
+        />
 
-      {/* Ambient Radial Cyber Glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[500px] h-[250px] bg-electric/15 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[350px] h-[180px] bg-cyan/10 blur-[90px] rounded-full pointer-events-none" />
+        {/* Ambient Radial Cyber Glows */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] bg-electric/15 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[180px] bg-cyan/10 blur-[90px] rounded-full pointer-events-none" />
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10 flex flex-col justify-between flex-1">
         {/* =========================================================================
@@ -220,11 +299,10 @@ export function HeroInteractiveNetwork() {
                 >
                   <Link
                     href={`/products?category=${node.categorySlug}`}
-                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl glass-base transition-all duration-300 block ${
-                      isHovered
+                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl glass-base transition-all duration-300 block ${isHovered
                         ? "border-[#00BFFF]/60 shadow-[0_0_20px_rgba(0,191,255,0.3)] bg-navy/80 scale-[1.02]"
                         : "border-white/10 hover:border-[#00BFFF]/40"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3 w-full">
                       <div
@@ -255,13 +333,14 @@ export function HeroInteractiveNetwork() {
           </div>
 
           {/* -----------------------------------------------------------------------
-              CENTER SEARCH CONSOLE: THE CORE HUB
+              CENTER SEARCH CONSOLE: THE CORE HUB WITH LIVE DB CATEGORY-AWARE SEARCH
               ----------------------------------------------------------------------- */}
           <motion.div
+            ref={searchContainerRef}
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, delay: 0.15 }}
-            className="w-full flex-1 max-w-xl xl:max-w-2xl mx-auto z-20 flex flex-col items-center"
+            className="w-full flex-1 max-w-xl xl:max-w-2xl mx-auto z-30 flex flex-col items-center relative"
           >
             {/* The Shell */}
             <form
@@ -274,10 +353,32 @@ export function HeroInteractiveNetwork() {
                 <input
                   type="text"
                   value={searchQuery}
+                  onFocus={() => {
+                    if (
+                      searchResult &&
+                      (searchResult.directMatches.length > 0 ||
+                        searchResult.relatedMatches.length > 0)
+                    ) {
+                      setIsDropdownOpen(true);
+                    }
+                  }}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Rechercher un service, outil IA ou abonnement..."
                   className="w-full bg-transparent border-none outline-none text-white placeholder-[#C8D5E5]/40 text-xs sm:text-sm px-2.5 md:px-3"
                 />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSearchResult(null);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="p-1 rounded-full text-silver/40 hover:text-white hover:bg-white/10 mr-1.5 transition cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
 
               {/* Primary Action Button */}
@@ -289,6 +390,170 @@ export function HeroInteractiveNetwork() {
                 <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </form>
+
+            {/* Smart Live DB Dropdown */}
+            <AnimatePresence>
+              {isDropdownOpen && debouncedQuery && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                  className="absolute top-full left-0 right-0 mt-3 rounded-2xl bg-[#090E1A]/95 backdrop-blur-2xl border border-white/20 p-3.5 sm:p-4 shadow-[0_25px_60px_rgba(5,7,12,0.95),0_0_35px_rgba(0,191,255,0.2)] z-50 text-left max-h-[460px] overflow-y-auto"
+                >
+                  {/* Realtime DB Search Header */}
+                  <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/10 px-1 text-[11px]">
+                    {searchLoading && (
+                      <div className="flex items-center gap-1.5 text-cyan font-semibold">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Recherche...</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {searchLoading && !searchResult && (
+                    <div className="py-8 flex flex-col items-center justify-center gap-2 text-silver/60">
+                      <Loader2 className="w-5 h-5 animate-spin text-cyan" />
+                      <span className="text-xs">Interrogation de la base de données...</span>
+                    </div>
+                  )}
+
+                  {searchResult && (
+                    <div className="space-y-4">
+                      {/* Direct Matches Section */}
+                      {searchResult.directMatches.length > 0 && (
+                        <div>
+                          <div className="flex items-center justify-between mb-2 px-1">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-cyan flex items-center gap-1">
+                              <Sparkles className="w-3 h-3" />
+                              <span>Résultats Directs ({searchResult.directMatches.length})</span>
+                            </span>
+                            <span className="text-[10px] text-silver/40">Correspondance exacte</span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {searchResult.directMatches.map((prod) => (
+                              <Link
+                                key={prod.id}
+                                href={`/products/${prod.slug}`}
+                                onClick={() => setIsDropdownOpen(false)}
+                                className="group p-2.5 rounded-xl bg-white/[0.03] hover:bg-[#075BDB]/15 border border-white/10 hover:border-cyan/50 transition-all flex items-center gap-3 cursor-pointer"
+                              >
+                                <div className="w-10 h-10 rounded-lg bg-midnight border border-white/10 p-1 flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-105 transition">
+                                  <img
+                                    src={prod.image}
+                                    alt={prod.name}
+                                    className="w-full h-full object-contain"
+                                  />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5">
+                                    <h4 className="text-xs font-bold text-white group-hover:text-cyan transition truncate">
+                                      {prod.name}
+                                    </h4>
+                                  </div>
+                                  <div className="flex items-center justify-between mt-0.5">
+                                    <span className="text-[10px] text-silver/60 truncate">
+                                      {prod.categoryLabel}
+                                    </span>
+                                    <span className="text-[11px] font-bold text-white">
+                                      {formatPrice(prod.price ?? 0)} DZD
+                                    </span>
+                                  </div>
+                                </div>
+                                <ChevronRight className="w-4 h-4 text-silver/40 group-hover:text-cyan group-hover:translate-x-0.5 transition shrink-0" />
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Same Category / Sibling Suggestions Section */}
+                      {searchResult.relatedMatches.length > 0 && (
+                        <div>
+                          <div className="flex items-center justify-between mb-2 px-1">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                              <Layers className="w-3 h-3" />
+                              <span>
+                                Aussi dans la même catégorie {searchResult.categoryName ? `(${searchResult.categoryName})` : ""}
+                              </span>
+                            </span>
+                            <span className="text-[10px] text-silver/40">Services similaires suggérés</span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {searchResult.relatedMatches.map((prod) => (
+                              <Link
+                                key={prod.id}
+                                href={`/products/${prod.slug}`}
+                                onClick={() => setIsDropdownOpen(false)}
+                                className="group p-2.5 rounded-xl bg-white/[0.02] hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/40 transition-all flex items-center gap-3 cursor-pointer"
+                              >
+                                <div className="w-10 h-10 rounded-lg bg-midnight border border-white/10 p-1 flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-105 transition">
+                                  <img
+                                    src={prod.image}
+                                    alt={prod.name}
+                                    className="w-full h-full object-contain"
+                                  />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5">
+                                    <h4 className="text-xs font-bold text-white group-hover:text-emerald-300 transition truncate">
+                                      {prod.name}
+                                    </h4>
+                                    <span className="px-1.5 py-0.2 rounded text-[9px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
+                                      Similaire
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center justify-between mt-0.5">
+                                    <span className="text-[10px] text-silver/50 truncate">
+                                      {prod.categoryLabel}
+                                    </span>
+                                    <span className="text-[11px] font-bold text-white">
+                                      {formatPrice(prod.price ?? 0)} DZD
+                                    </span>
+                                  </div>
+                                </div>
+                                <ChevronRight className="w-4 h-4 text-silver/40 group-hover:text-emerald-300 group-hover:translate-x-0.5 transition shrink-0" />
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* No Results at all */}
+                      {searchResult.directMatches.length === 0 && searchResult.relatedMatches.length === 0 && !searchLoading && (
+                        <div className="py-6 text-center text-xs text-silver/60">
+                          <p className="font-semibold text-white">Aucun service trouvé pour &quot;{debouncedQuery}&quot;</p>
+                          <p className="text-[11px] text-silver/40 mt-1">
+                            Essayez un mot-clé comme Netflix, ChatGPT, Canva, Windows ou Disney+
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Footer Actions */}
+                      <div className="pt-2.5 border-t border-white/10 flex items-center justify-between text-xs">
+                        <button
+                          type="button"
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="text-silver/50 hover:text-white transition text-[11px] cursor-pointer"
+                        >
+                          Fermer [Échap]
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleSearchSubmit}
+                          className="font-bold text-cyan hover:text-white flex items-center gap-1.5 transition text-[11px] cursor-pointer"
+                        >
+                          <span>Voir tous les résultats pour &quot;{debouncedQuery}&quot;</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           {/* -----------------------------------------------------------------------
@@ -316,11 +581,10 @@ export function HeroInteractiveNetwork() {
                 >
                   <Link
                     href={`/products?category=${node.categorySlug}`}
-                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl glass-base transition-all duration-300 block ${
-                      isHovered
+                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl glass-base transition-all duration-300 block ${isHovered
                         ? "border-[#00BFFF]/60 shadow-[0_0_20px_rgba(0,191,255,0.3)] bg-navy/80 scale-[1.02]"
                         : "border-white/10 hover:border-[#00BFFF]/40"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3 w-full">
                       <div

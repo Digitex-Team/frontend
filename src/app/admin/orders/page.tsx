@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { adminGetOrders, adminUpdateOrderStatus, adminDeleteOrder } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
+import { ConfirmDeleteModal } from "@/components/ui/ConfirmDeleteModal";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -32,6 +33,8 @@ export default function AdminOrdersPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
+  const [orderToDelete, setOrderToDelete] = useState<{ id: string; orderNumber: string } | null>(null);
+  const [deletingOrder, setDeletingOrder] = useState(false);
 
   const fetchOrders = async (targetPage = page) => {
     try {
@@ -72,22 +75,20 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const handleDeleteOrder = async (id: string, orderNumber: string) => {
-    if (
-      !confirm(
-        `Supprimer définitivement la commande ${orderNumber} de la base de données ? Cette action est irréversible.`
-      )
-    ) {
-      return;
-    }
+  const confirmDeleteOrder = async () => {
+    if (!orderToDelete) return;
+    setDeletingOrder(true);
     try {
-      await adminDeleteOrder(id);
-      if (selectedOrder && selectedOrder.id === id) {
+      await adminDeleteOrder(orderToDelete.id);
+      if (selectedOrder && selectedOrder.id === orderToDelete.id) {
         setSelectedOrder(null);
       }
+      setOrderToDelete(null);
       fetchOrders();
     } catch (err: any) {
       alert(err.response?.data?.message || "Erreur lors de la suppression de la commande");
+    } finally {
+      setDeletingOrder(false);
     }
   };
 
@@ -273,9 +274,9 @@ export default function AdminOrdersPage() {
                           </button>
 
                           <button
-                            onClick={() => handleDeleteOrder(ord.id, ord.orderNumber)}
-                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition cursor-pointer"
-                            title="Supprimer définitivement la commande"
+                            onClick={() => setOrderToDelete({ id: ord.id, orderNumber: ord.orderNumber })}
+                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition cursor-pointer"
+                            title="Supprimer définitivement la commande de la base de données"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -452,7 +453,7 @@ export default function AdminOrdersPage() {
                   </p>
                   <button
                     type="button"
-                    onClick={() => handleDeleteOrder(selectedOrder.id, selectedOrder.orderNumber)}
+                    onClick={() => setOrderToDelete({ id: selectedOrder.id, orderNumber: selectedOrder.orderNumber })}
                     className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-semibold transition cursor-pointer flex items-center gap-1.5"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -464,6 +465,18 @@ export default function AdminOrdersPage() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Modern High-End Delete Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={!!orderToDelete}
+        onClose={() => setOrderToDelete(null)}
+        onConfirm={confirmDeleteOrder}
+        title="Supprimer la Commande"
+        itemName={orderToDelete ? `#${orderToDelete.orderNumber}` : undefined}
+        itemType="commande"
+        description="Attention : cette commande et tous les articles rattachés seront définitivement effacés de la base de données PostgreSQL. Cette opération est irréversible."
+        loading={deletingOrder}
+      />
     </div>
   );
 }

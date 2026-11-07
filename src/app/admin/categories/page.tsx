@@ -29,6 +29,7 @@ import {
 } from "@/lib/api";
 import { slugify } from "@/lib/utils";
 import { CustomCheckbox } from "@/components/ui/CustomCheckbox";
+import { ConfirmDeleteModal } from "@/components/ui/ConfirmDeleteModal";
 
 const PRESET_ICONS = [
   "Sparkles",
@@ -47,6 +48,9 @@ export default function AdminCategoriesPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editCategory, setEditCategory] = useState<DbCategory | null>(null);
+
+  // High-End Hard Delete Modal State
+  const [categoryToDelete, setCategoryToDelete] = useState<{ id: string; name: string } | null>(null);
 
   // Form State
   const [formName, setFormName] = useState("");
@@ -133,11 +137,12 @@ export default function AdminCategoriesPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Supprimer définitivement cette catégorie de la base de données ? Cette action est irréversible.")) return;
-    setDeletingId(id);
+  const confirmDeleteCategory = async () => {
+    if (!categoryToDelete) return;
+    setDeletingId(categoryToDelete.id);
     try {
-      await adminDeleteCategory(id);
+      await adminDeleteCategory(categoryToDelete.id);
+      setCategoryToDelete(null);
       fetchCategoriesList();
     } catch (err: any) {
       alert(err.response?.data?.message || "Impossible de supprimer cette catégorie");
@@ -307,10 +312,10 @@ export default function AdminCategoriesPage() {
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(cat.id)}
+                          onClick={() => setCategoryToDelete({ id: cat.id, name: cat.name })}
                           disabled={deletingId === cat.id}
-                          className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition cursor-pointer disabled:opacity-50"
-                          title="Supprimer"
+                          className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition cursor-pointer disabled:opacity-50"
+                          title="Supprimer définitivement la catégorie"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -460,6 +465,18 @@ export default function AdminCategoriesPage() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Modern High-End Delete Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={!!categoryToDelete}
+        onClose={() => setCategoryToDelete(null)}
+        onConfirm={confirmDeleteCategory}
+        title="Supprimer la Catégorie"
+        itemName={categoryToDelete?.name}
+        itemType="catégorie"
+        description="Attention : cette catégorie sera définitivement supprimée de la base de données PostgreSQL. Les produits associés verront leur catégorie dissociée. Cette opération est irréversible."
+        loading={!!deletingId}
+      />
     </div>
   );
 }

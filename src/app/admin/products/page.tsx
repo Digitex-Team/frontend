@@ -32,6 +32,7 @@ import {
 import { formatPrice, slugify } from "@/lib/utils";
 import { CustomCheckbox } from "@/components/ui/CustomCheckbox";
 import { CustomSelect } from "@/components/ui/CustomSelect";
+import { ConfirmDeleteModal } from "@/components/ui/ConfirmDeleteModal";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -46,6 +47,10 @@ export default function AdminProductsPage() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editProduct, setEditProduct] = useState<any | null>(null);
+
+  // High-End Hard Delete Modal State
+  const [productToDelete, setProductToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [deletingProduct, setDeletingProduct] = useState(false);
 
   // Form State
   const [formName, setFormName] = useState("");
@@ -291,13 +296,17 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Supprimer définitivement le produit "${name}" de la base de données ? Cette action est irréversible.`)) return;
+  const confirmDeleteProduct = async () => {
+    if (!productToDelete) return;
+    setDeletingProduct(true);
     try {
-      await adminDeleteProduct(id);
+      await adminDeleteProduct(productToDelete.id);
+      setProductToDelete(null);
       fetchProductsList(page, search, selectedCategory);
     } catch (err: any) {
       alert(err.response?.data?.message || "Impossible de supprimer ce produit");
+    } finally {
+      setDeletingProduct(false);
     }
   };
 
@@ -518,9 +527,9 @@ export default function AdminProductsPage() {
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(prod.id, prod.name)}
-                          className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition cursor-pointer"
-                          title="Supprimer"
+                          onClick={() => setProductToDelete({ id: prod.id, name: prod.name })}
+                          className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition cursor-pointer"
+                          title="Supprimer définitivement le produit"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -857,6 +866,18 @@ export default function AdminProductsPage() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Modern High-End Delete Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={!!productToDelete}
+        onClose={() => setProductToDelete(null)}
+        onConfirm={confirmDeleteProduct}
+        title="Supprimer le Produit"
+        itemName={productToDelete?.name}
+        itemType="produit"
+        description="Attention : ce produit et toutes ses formules tarifaires seront définitivement supprimés de la base de données PostgreSQL. Cette opération est irréversible."
+        loading={deletingProduct}
+      />
     </div>
   );
 }
