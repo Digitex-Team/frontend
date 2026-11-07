@@ -16,6 +16,17 @@ export const apiClient = axios.create({
   timeout: 10000,
 });
 
+// Auto-attach JWT Bearer token if saved in localStorage (avoids cross-site cookie blocks)
+apiClient.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("digitex_admin_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
 // Helper to adapt Backend Prisma Product to Frontend Product Interface
 export function mapBackendProductToFrontend(raw: any): Product {
   const tiers: SubscriptionTier[] = (raw.tiers || []).map((t: any) => ({
@@ -122,10 +133,16 @@ export async function checkServerHealth() {
 
 export async function adminLogin(username: string, password: string) {
   const res = await apiClient.post("/admin/auth/login", { username, password });
+  if (res.data?.token && typeof window !== "undefined") {
+    localStorage.setItem("digitex_admin_token", res.data.token);
+  }
   return res.data;
 }
 
 export async function adminLogout() {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("digitex_admin_token");
+  }
   const res = await apiClient.post("/admin/auth/logout");
   return res.data;
 }

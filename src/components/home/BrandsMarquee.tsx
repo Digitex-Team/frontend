@@ -58,6 +58,7 @@ export function BrandsMarquee() {
                   width={logo.width}
                   height={logo.height}
                   className="h-7 sm:h-8 w-auto max-h-8 max-w-[120px] object-contain opacity-75 hover:opacity-100 transition-opacity duration-300 drop-shadow-[0_0_10px_rgba(255,255,255,0.06)]"
+                  style={{ width: "auto", height: "auto" }}
                 />
               </div>
             ))}

@@ -64,7 +64,7 @@ export default function AdminLayout({
     return <>{children}</>;
   }
 
-  if (loading) {
+  if (loading || !adminUser) {
     return (
       <div className="min-h-screen bg-[#05070C] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">

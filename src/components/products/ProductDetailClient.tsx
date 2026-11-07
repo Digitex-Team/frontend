@@ -254,6 +254,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                       width={64}
                       height={64}
                       className="object-contain"
+                      style={{ width: "auto", height: "auto" }}
                       priority
                     />
                   ) : (

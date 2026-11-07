@@ -20,8 +20,8 @@ export default function AdminLoginPage() {
 
     try {
       const res = await adminLogin(username, password);
-      if (res && res.success) {
-        router.push("/admin");
+      if (res && (res.success || res.token)) {
+        router.push("/admin/dashboard");
       } else {
         setError("Identifiants administrateur invalides");
       }
@@ -92,7 +92,7 @@ export default function AdminLoginPage() {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="admin"
+                  placeholder="Identifiant administrateur"
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0E1726]/90 border border-white/10 focus:border-[#00BFFF] focus:ring-1 focus:ring-[#00BFFF] text-white text-sm outline-none transition placeholder:text-silver/30"
                 />
               </div>

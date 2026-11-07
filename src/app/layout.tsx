@@ -49,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className={`${plusJakarta.variable} dark scroll-smooth`}>
+    <html lang="fr" className={`${plusJakarta.variable} dark scroll-smooth`} data-scroll-behavior="smooth">
       <body className="min-h-screen bg-[#05070C] text-white flex flex-col font-sans antialiased selection:bg-cyan selection:text-black">
         <Navbar />
         <main className="flex-1">{children}</main>
