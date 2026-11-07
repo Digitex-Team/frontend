@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+import { StoreLayoutWrapper } from "@/components/layout/StoreLayoutWrapper";
 import { siteConfig } from "@/data/siteConfig";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -51,9 +50,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${plusJakarta.variable} dark scroll-smooth`} data-scroll-behavior="smooth">
       <body className="min-h-screen bg-[#05070C] text-white flex flex-col font-sans antialiased selection:bg-cyan selection:text-black">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <StoreLayoutWrapper>{children}</StoreLayoutWrapper>
       </body>
     </html>
   );

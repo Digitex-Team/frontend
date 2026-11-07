@@ -4,37 +4,42 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { Product, ProductCategory } from "@/types";
-import { productsCatalog } from "@/data/products";
+import { Product } from "@/types";
 import { ProductCard } from "@/components/products/ProductCard";
-import { getLiveProducts } from "@/lib/api";
+import { getLiveProducts, getLiveCategories, DbCategory } from "@/lib/api";
 
 export function TopProducts() {
-  const [activeTab, setActiveTab] = useState<ProductCategory>("all");
-  const [catalogItems, setCatalogItems] = useState<Product[]>(productsCatalog);
+  const [activeTab, setActiveTab] = useState<string>("all");
+  const [catalogItems, setCatalogItems] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<DbCategory[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
-    getLiveProducts().then((liveData) => {
-      if (isMounted && liveData && liveData.length > 0) {
-        setCatalogItems(liveData);
+
+    Promise.all([getLiveProducts(), getLiveCategories()]).then(([products, cats]) => {
+      if (isMounted) {
+        setCatalogItems(products || []);
+        setCategories(cats || []);
+        setLoading(false);
       }
     });
+
     return () => {
       isMounted = false;
     };
   }, []);
 
-  const tabs: { id: ProductCategory; label: string }[] = [
+  const tabs = [
     { id: "all", label: "Tous les tops" },
-    { id: "ai", label: "Intelligence Artificielle" },
-    { id: "streaming", label: "Streaming 4K" },
-    { id: "design", label: "Design & Vidéo" },
-    { id: "utilities", label: "Licences & VPN" },
+    ...categories.map((c) => ({
+      id: c.slug,
+      label: c.name,
+    })),
   ];
 
   const filteredProducts = catalogItems.filter((item) => {
-    if (activeTab === "all") return item.isPopular || item.isBestseller || item.isFeatured;
+    if (activeTab === "all") return item.isPopular || true;
     return item.category === activeTab;
   });
 
@@ -92,12 +97,36 @@ export function TopProducts() {
         })}
       </div>
 
-      {/* Product Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-        {filteredProducts.slice(0, 6).map((prod) => (
-          <ProductCard key={prod.id} product={prod} />
-        ))}
-      </div>
+      {/* Product Cards Grid or Loading Skeleton */}
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <div
+              key={idx}
+              className="h-44 rounded-3xl bg-[#101B2C]/40 border border-white/5 animate-pulse p-5 flex flex-col justify-between"
+            >
+              <div className="flex gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-white/10" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-3/4 bg-white/10 rounded-md" />
+                  <div className="h-3 w-1/2 bg-white/5 rounded-md" />
+                </div>
+              </div>
+              <div className="h-8 w-full bg-white/5 rounded-xl mt-4" />
+            </div>
+          ))}
+        </div>
+      ) : filteredProducts.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          {filteredProducts.slice(0, 6).map((prod) => (
+            <ProductCard key={prod.id} product={prod} />
+          ))}
+        </div>
+      ) : (
+        <div className="py-12 text-center text-xs text-silver/50">
+          Aucun produit disponible dans cette catégorie pour le moment.
+        </div>
+      )}
     </section>
   );
 }

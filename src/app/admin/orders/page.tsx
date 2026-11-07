@@ -15,8 +15,11 @@ import {
   X,
   CreditCard,
   User,
+  ChevronLeft,
+  ChevronRight,
+  Trash2,
 } from "lucide-react";
-import { adminGetOrders, adminUpdateOrderStatus } from "@/lib/api";
+import { adminGetOrders, adminUpdateOrderStatus, adminDeleteOrder } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
 
 export default function AdminOrdersPage() {
@@ -25,12 +28,19 @@ export default function AdminOrdersPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (targetPage = page) => {
     try {
-      const data = await adminGetOrders(statusFilter, search);
+      setLoading(true);
+      const data = await adminGetOrders(statusFilter, search, targetPage, 10);
       setOrders(data?.orders || []);
+      setTotalPages(data?.meta?.totalPages || 1);
+      setTotalCount(data?.meta?.total || 0);
+      setPage(data?.meta?.page || 1);
     } catch (e) {
       console.error("Failed to load orders", e);
     } finally {
@@ -40,12 +50,14 @@ export default function AdminOrdersPage() {
   };
 
   useEffect(() => {
-    fetchOrders();
+    setPage(1);
+    fetchOrders(1);
   }, [statusFilter]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchOrders();
+    setPage(1);
+    fetchOrders(1);
   };
 
   const handleStatusChange = async (id: string, newStatus: string) => {
@@ -57,6 +69,25 @@ export default function AdminOrdersPage() {
       }
     } catch (e) {
       console.error("Failed to update status", e);
+    }
+  };
+
+  const handleDeleteOrder = async (id: string, orderNumber: string) => {
+    if (
+      !confirm(
+        `Supprimer définitivement la commande ${orderNumber} de la base de données ? Cette action est irréversible.`
+      )
+    ) {
+      return;
+    }
+    try {
+      await adminDeleteOrder(id);
+      if (selectedOrder && selectedOrder.id === id) {
+        setSelectedOrder(null);
+      }
+      fetchOrders();
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Erreur lors de la suppression de la commande");
     }
   };
 
@@ -240,6 +271,14 @@ export default function AdminOrdersPage() {
                           >
                             <Eye className="w-4 h-4" />
                           </button>
+
+                          <button
+                            onClick={() => handleDeleteOrder(ord.id, ord.orderNumber)}
+                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition cursor-pointer"
+                            title="Supprimer définitivement la commande"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -247,6 +286,61 @@ export default function AdminOrdersPage() {
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* Pagination Bar */}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-white/10 bg-white/[0.01] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <span className="text-silver/60">
+              Page <strong className="text-white font-bold">{page}</strong> sur{" "}
+              <strong className="text-white font-bold">{totalPages}</strong> ({totalCount} commandes)
+            </span>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => {
+                  const p = Math.max(1, page - 1);
+                  setPage(p);
+                  fetchOrders(p);
+                }}
+                disabled={page <= 1}
+                className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-silver hover:text-white disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 transition cursor-pointer"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>Précédent</span>
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => {
+                    setPage(p);
+                    fetchOrders(p);
+                  }}
+                  className={`w-8 h-8 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    p === page
+                      ? "bg-[#075BDB] text-white border border-[#00BFFF]"
+                      : "bg-white/5 text-silver hover:bg-white/10 hover:text-white border border-white/5"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+
+              <button
+                onClick={() => {
+                  const p = Math.min(totalPages, page + 1);
+                  setPage(p);
+                  fetchOrders(p);
+                }}
+                disabled={page >= totalPages}
+                className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-silver hover:text-white disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 transition cursor-pointer"
+              >
+                <span>Suivant</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -349,6 +443,21 @@ export default function AdminOrdersPage() {
                       </button>
                     ))}
                   </div>
+                </div>
+
+                {/* Hard Delete Order */}
+                <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+                  <p className="text-[11px] text-silver/50">
+                    Suppression définitive de la base de données
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteOrder(selectedOrder.id, selectedOrder.orderNumber)}
+                    className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-semibold transition cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Supprimer la commande</span>
+                  </button>
                 </div>
               </div>
             </motion.div>

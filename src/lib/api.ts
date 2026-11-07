@@ -1,6 +1,22 @@
 import axios from "axios";
 import { Product, SubscriptionTier } from "@/types";
-import { productsCatalog } from "@/data/products";
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface DbCategory {
+  id: string;
+  slug: string;
+  name: string;
+  iconName?: string;
+  active: boolean;
+  createdAt?: string;
+  _count?: { products: number };
+}
 
 // Normalize API Base URL whether configured with or without '/api/v1'
 const RAW_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000").replace(/\/+$/, "");
@@ -64,6 +80,16 @@ export function mapBackendProductToFrontend(raw: any): Product {
 
 // ================= PUBLIC STORE APIS =================
 
+export async function getLiveCategories(): Promise<DbCategory[]> {
+  try {
+    const res = await apiClient.get("/categories");
+    if (Array.isArray(res.data)) {
+      return res.data;
+    }
+  } catch (_err) {}
+  return [];
+}
+
 export async function getLiveProducts(category?: string, search?: string, sortBy?: string): Promise<Product[]> {
   try {
     const params: Record<string, string> = {};
@@ -72,23 +98,52 @@ export async function getLiveProducts(category?: string, search?: string, sortBy
     if (sortBy) params.sortBy = sortBy;
 
     const res = await apiClient.get("/products", { params });
-    if (Array.isArray(res.data) && res.data.length > 0) {
-      return res.data.map(mapBackendProductToFrontend);
+    const list = Array.isArray(res.data) ? res.data : res.data?.products;
+    if (Array.isArray(list)) {
+      return list.map(mapBackendProductToFrontend);
     }
-  } catch (_err) {
-    // Graceful fallback to static catalog during SSR/offline/build
-  }
+  } catch (_err) {}
+  return [];
+}
 
-  // Graceful fallback to static catalog
-  let list = [...productsCatalog];
-  if (category && category !== "all") {
-    list = list.filter((p) => p.category === category);
-  }
-  if (search && search.trim()) {
-    const s = search.toLowerCase();
-    list = list.filter((p) => p.name.toLowerCase().includes(s) || p.slug.toLowerCase().includes(s));
-  }
-  return list;
+export async function getPaginatedProducts(query?: {
+  category?: string;
+  search?: string;
+  sortBy?: string;
+  page?: number;
+  limit?: number;
+}): Promise<{ products: Product[]; meta: PaginationMeta }> {
+  try {
+    const params: Record<string, any> = {};
+    if (query?.category && query.category !== "all") params.category = query.category;
+    if (query?.search && query.search.trim()) params.search = query.search.trim();
+    if (query?.sortBy) params.sortBy = query.sortBy;
+    if (query?.page) params.page = query.page;
+    if (query?.limit) params.limit = query.limit;
+
+    const res = await apiClient.get("/products", { params });
+    if (res.data?.products && res.data?.meta) {
+      return {
+        products: res.data.products.map(mapBackendProductToFrontend),
+        meta: res.data.meta,
+      };
+    }
+    if (Array.isArray(res.data)) {
+      return {
+        products: res.data.map(mapBackendProductToFrontend),
+        meta: {
+          total: res.data.length,
+          page: 1,
+          limit: res.data.length || 12,
+          totalPages: 1,
+        },
+      };
+    }
+  } catch (_err) {}
+  return {
+    products: [],
+    meta: { total: 0, page: 1, limit: query?.limit || 12, totalPages: 0 },
+  };
 }
 
 export async function getLiveProductBySlug(slug: string): Promise<Product | null> {
@@ -97,11 +152,8 @@ export async function getLiveProductBySlug(slug: string): Promise<Product | null
     if (res.data) {
       return mapBackendProductToFrontend(res.data);
     }
-  } catch (_err) {
-    // Graceful fallback to static catalog during SSR/offline/build
-  }
-
-  return productsCatalog.find((p) => p.slug === slug) || null;
+  } catch (_err) {}
+  return null;
 }
 
 export async function submitOrder(orderData: {
@@ -152,8 +204,48 @@ export async function adminGetProfile() {
   return res.data;
 }
 
-export async function adminGetProducts() {
-  const res = await apiClient.get("/admin/products");
+// Categories Management
+export async function adminGetCategories(): Promise<DbCategory[]> {
+  const res = await apiClient.get("/admin/categories");
+  return res.data || [];
+}
+
+export async function adminCreateCategory(data: {
+  name: string;
+  slug?: string;
+  iconName?: string;
+  active?: boolean;
+}) {
+  const res = await apiClient.post("/admin/categories", data);
+  return res.data;
+}
+
+export async function adminUpdateCategory(
+  id: string,
+  data: {
+    name?: string;
+    slug?: string;
+    iconName?: string;
+    active?: boolean;
+  }
+) {
+  const res = await apiClient.patch(`/admin/categories/${id}`, data);
+  return res.data;
+}
+
+export async function adminDeleteCategory(id: string) {
+  const res = await apiClient.delete(`/admin/categories/${id}`);
+  return res.data;
+}
+
+// Products Management
+export async function adminGetProducts(params?: {
+  search?: string;
+  category?: string;
+  page?: number;
+  limit?: number;
+}) {
+  const res = await apiClient.get("/admin/products", { params });
   return res.data;
 }
 
@@ -172,10 +264,16 @@ export async function adminDeleteProduct(id: string) {
   return res.data;
 }
 
-export async function adminGetOrders(status?: string, search?: string, page = 1) {
-  const params: Record<string, any> = { page };
+// Orders Management
+export async function adminGetOrders(
+  status?: string,
+  search?: string,
+  page = 1,
+  limit = 10
+) {
+  const params: Record<string, any> = { page, limit };
   if (status && status !== "ALL") params.status = status;
-  if (search) params.search = search;
+  if (search && search.trim()) params.search = search.trim();
 
   const res = await apiClient.get("/admin/orders", { params });
   return res.data;
@@ -193,5 +291,10 @@ export async function adminGetOrderStats() {
 
 export async function adminUpdateOrderStatus(id: string, status: string) {
   const res = await apiClient.patch(`/admin/orders/${id}/status`, { status });
+  return res.data;
+}
+
+export async function adminDeleteOrder(id: string) {
+  const res = await apiClient.delete(`/admin/orders/${id}`);
   return res.data;
 }

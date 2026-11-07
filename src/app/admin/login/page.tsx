@@ -13,6 +13,12 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && localStorage.getItem("digitex_admin_token")) {
+      router.replace("/admin/dashboard");
+    }
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);

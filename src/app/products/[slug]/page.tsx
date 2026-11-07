@@ -1,19 +1,26 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { productsCatalog } from "@/data/products";
 import { siteConfig } from "@/data/siteConfig";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
-import { getLiveProductBySlug } from "@/lib/api";
+import { getLiveProductBySlug, getLiveProducts } from "@/lib/api";
+
+export const dynamicParams = true;
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  return productsCatalog.map((product) => ({
-    slug: product.slug,
-  }));
+  try {
+    const products = await getLiveProducts();
+    if (products && products.length > 0) {
+      return products.map((product) => ({
+        slug: product.slug,
+      }));
+    }
+  } catch (_e) {}
+  return [];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

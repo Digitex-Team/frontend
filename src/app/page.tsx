@@ -1,30 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { HeroInteractiveNetwork } from "@/components/home/HeroInteractiveNetwork";
 import { BrandsMarquee } from "@/components/home/BrandsMarquee";
 import { TopProducts } from "@/components/home/TopProducts";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { HomeContactSection } from "@/components/home/HomeContactSection";
-import { getLiveProducts } from "@/lib/api";
-import { Product } from "@/types";
-import { productsCatalog } from "@/data/products";
 
 export default function HomePage() {
-  const [liveProducts, setLiveProducts] = useState<Product[]>(productsCatalog);
-
-  useEffect(() => {
-    let isMounted = true;
-    getLiveProducts().then((products) => {
-      if (isMounted && products && products.length > 0) {
-        setLiveProducts(products);
-      }
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   return (
     <div className="relative overflow-hidden">
       {/* Ambient glow orbs — behind all content */}

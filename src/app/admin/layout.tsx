@@ -12,6 +12,7 @@ import {
   Shield,
   Menu,
   X,
+  Layers,
 } from "lucide-react";
 import { adminGetProfile, adminLogout } from "@/lib/api";
 
@@ -34,6 +35,20 @@ export default function AdminLayout({
       return;
     }
 
+    // If admin session is already loaded, skip re-verification on internal page switches
+    if (adminUser) {
+      setLoading(false);
+      return;
+    }
+
+    // Check if admin token exists
+    const token = typeof window !== "undefined" ? localStorage.getItem("digitex_admin_token") : null;
+    if (!token) {
+      router.replace("/admin/login");
+      setLoading(false);
+      return;
+    }
+
     adminGetProfile()
       .then((data) => {
         if (data && data.admin) {
@@ -42,13 +57,22 @@ export default function AdminLayout({
           router.replace("/admin/login");
         }
       })
-      .catch(() => {
-        router.replace("/admin/login");
+      .catch((err) => {
+        // Only kick out to login if specifically 401 Unauthorized
+        if (err?.response?.status === 401) {
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("digitex_admin_token");
+          }
+          router.replace("/admin/login");
+        } else {
+          // Keep active session if token exists
+          setAdminUser({ username: "admin" });
+        }
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [pathname, isLoginPage, router]);
+  }, [pathname, isLoginPage, adminUser, router]);
 
   const handleLogout = async () => {
     try {
@@ -56,6 +80,10 @@ export default function AdminLayout({
     } catch (e) {
       console.error("Logout error", e);
     } finally {
+      setAdminUser(null);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("digitex_admin_token");
+      }
       router.replace("/admin/login");
     }
   };
@@ -79,6 +107,7 @@ export default function AdminLayout({
 
   const navLinks = [
     { href: "/admin/dashboard", label: "Tableau de Bord", icon: LayoutDashboard },
+    { href: "/admin/categories", label: "Gestion Catégories", icon: Layers },
     { href: "/admin/products", label: "Gestion Produits & Tiers", icon: Package },
     { href: "/admin/orders", label: "Commandes Clients", icon: ShoppingBag },
   ];

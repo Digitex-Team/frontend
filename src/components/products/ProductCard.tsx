@@ -248,13 +248,14 @@ export function ProductCard({ product }: ProductCardProps) {
 
             {/* Logo element */}
             <div className="relative z-10 flex items-center justify-center w-full h-full p-2">
-              {product.image && product.image.startsWith("/") ? (
+              {product.image && (product.image.startsWith("/") || product.image.startsWith("data:") || product.image.startsWith("http")) ? (
                 <Image
                   src={product.image}
                   alt={product.name}
                   width={40}
                   height={40}
-                  className="object-contain"
+                  unoptimized={product.image.startsWith("data:")}
+                  className="object-contain max-h-10 max-w-10"
                   style={{ width: "auto", height: "auto" }}
                 />
               ) : (

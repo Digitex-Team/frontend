@@ -13,14 +13,18 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Star,
+  Layers,
+  Tv,
+  ShieldCheck,
+  Zap,
 } from "lucide-react";
-import { ProductCategory } from "@/types";
 import { SortOption } from "@/hooks/useProductFilter";
 import { CustomSelect, SelectOption } from "@/components/ui/CustomSelect";
 
 interface ProductFiltersProps {
-  selectedCategory: ProductCategory;
-  onSelectCategory: (cat: ProductCategory) => void;
+  categoriesList?: Array<{ id: string; slug: string; name: string; iconName?: string }>;
+  selectedCategory: string;
+  onSelectCategory: (cat: string) => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
   sortBy: SortOption;
@@ -29,6 +33,7 @@ interface ProductFiltersProps {
 }
 
 export function ProductFilters({
+  categoriesList = [],
   selectedCategory,
   onSelectCategory,
   searchQuery,
@@ -37,12 +42,36 @@ export function ProductFilters({
   onSortChange,
   totalCount,
 }: ProductFiltersProps) {
-  const categories: { id: ProductCategory; label: string; icon: React.ReactNode }[] = [
+  const getIconForCategory = (slug: string, iconName?: string) => {
+    switch (iconName || slug) {
+      case "ai":
+      case "Sparkles":
+        return <Sparkles className="h-4 w-4" />;
+      case "streaming":
+      case "Tv":
+      case "Film":
+        return <Tv className="h-4 w-4" />;
+      case "design":
+      case "Palette":
+        return <Palette className="h-4 w-4" />;
+      case "utilities":
+      case "ShieldCheck":
+        return <ShieldCheck className="h-4 w-4" />;
+      case "Zap":
+        return <Zap className="h-4 w-4" />;
+      default:
+        return <Layers className="h-4 w-4" />;
+    }
+  };
+
+  // Build category pills dynamically from DB categories
+  const categories = [
     { id: "all", label: "Tous les abonnements", icon: <SlidersHorizontal className="h-4 w-4" /> },
-    { id: "ai", label: "Intelligence Artificielle", icon: <Sparkles className="h-4 w-4" /> },
-    { id: "streaming", label: "Streaming & Cinéma", icon: <Film className="h-4 w-4" /> },
-    { id: "design", label: "Design & Vidéo", icon: <Palette className="h-4 w-4" /> },
-    { id: "utilities", label: "Utilitaires & VPN", icon: <Cpu className="h-4 w-4" /> },
+    ...categoriesList.map((c) => ({
+      id: c.slug,
+      label: c.name,
+      icon: getIconForCategory(c.slug, c.iconName),
+    })),
   ];
 
   const sortOptions: SelectOption[] = [
@@ -65,13 +94,13 @@ export function ProductFilters({
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Rechercher ChatGPT, Netflix, Canva, Windows..."
+            placeholder="Rechercher par mot-clé (ChatGPT, Netflix, Canva, Windows...)"
             className="w-full rounded-full glass-elevated py-3 pl-11 pr-9 text-sm text-white placeholder-silver/40 focus:border-cyan/70 focus:outline-none focus:ring-1 focus:ring-cyan/50 transition"
           />
           {searchQuery && (
             <button
               onClick={() => onSearchChange("")}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-silver/50 hover:text-white"
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-silver/50 hover:text-white cursor-pointer"
             >
               <X className="h-4 w-4" />
             </button>
@@ -81,7 +110,7 @@ export function ProductFilters({
         {/* Sort selector & Count */}
         <div className="flex items-center justify-between sm:justify-end gap-3.5">
           <span className="text-xs text-silver/60">
-            <strong className="text-white font-bold">{totalCount}</strong> produit(s)
+            <strong className="text-white font-bold">{totalCount}</strong> service(s)
           </span>
 
           <CustomSelect
@@ -120,4 +149,3 @@ export function ProductFilters({
     </div>
   );
 }
-

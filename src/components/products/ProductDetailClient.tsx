@@ -247,13 +247,14 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   style={{ backgroundColor: product.brandColor || "#00BFFF" }}
                 />
                 <div className="relative z-10 flex items-center justify-center p-3">
-                  {product.image && product.image.startsWith("/") ? (
+                  {product.image && (product.image.startsWith("/") || product.image.startsWith("data:") || product.image.startsWith("http")) ? (
                     <Image
                       src={product.image}
                       alt={product.name}
                       width={64}
                       height={64}
-                      className="object-contain"
+                      unoptimized={product.image.startsWith("data:")}
+                      className="object-contain max-h-16 max-w-16"
                       style={{ width: "auto", height: "auto" }}
                       priority
                     />

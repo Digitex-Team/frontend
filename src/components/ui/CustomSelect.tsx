@@ -17,7 +17,7 @@ interface CustomSelectProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  variant?: "default" | "ghost" | "hero";
+  variant?: "default" | "ghost" | "hero" | "form";
   className?: string;
   triggerClassName?: string;
   dropdownClassName?: string;
@@ -79,6 +79,8 @@ export function CustomSelect({
       "bg-transparent border-transparent hover:bg-white/5 text-silver hover:text-white rounded-lg px-3 py-2",
     hero:
       "glass-base md:bg-transparent border border-white/10 md:border-none rounded-xl md:rounded-none px-3.5 py-2 text-silver hover:text-white hover:bg-white/5 md:hover:bg-transparent",
+    form:
+      "w-full bg-[#0E1726] border-white/10 hover:border-[#00BFFF]/50 text-white rounded-xl px-3.5 py-2.5 text-xs focus:border-[#00BFFF] focus:ring-1 focus:ring-[#00BFFF]",
   };
 
   return (
