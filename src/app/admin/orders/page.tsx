@@ -18,6 +18,9 @@ import {
   FileText,
   Smartphone,
   ExternalLink,
+  Building2,
+  Coins,
+  CreditCard,
 } from "lucide-react";
 import { adminGetOrders, adminUpdateOrderStatus, adminDeleteOrder } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
@@ -133,6 +136,53 @@ export default function AdminOrdersPage() {
         return (
           <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/5 text-silver/60">
             {status}
+          </span>
+        );
+    }
+  };
+
+  const getPaymentMethodBadge = (method: string) => {
+    const norm = (method || "").toLowerCase().trim();
+    switch (norm) {
+      case "baridimob":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <Smartphone className="w-3 h-3 text-emerald-400" />
+            <span>BaridiMob</span>
+          </span>
+        );
+      case "ccp":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <Building2 className="w-3 h-3 text-amber-400" />
+            <span>CCP / Poste</span>
+          </span>
+        );
+      case "binance":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+            <Coins className="w-3 h-3 text-yellow-400" />
+            <span>Binance Pay</span>
+          </span>
+        );
+      case "redotpay":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+            <CreditCard className="w-3 h-3 text-rose-400" />
+            <span>RedotPay</span>
+          </span>
+        );
+      case "flexy":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-cyan-500/10 text-cyan border border-cyan/20">
+            <PhoneCall className="w-3 h-3 text-cyan" />
+            <span>Flexy</span>
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-white/5 text-silver/70 border border-white/10 uppercase">
+            {method || "Inconnu"}
           </span>
         );
     }
@@ -298,12 +348,15 @@ export default function AdminOrdersPage() {
                       </td>
 
                       <td className="py-3.5 px-4">
-                        <p className="font-bold text-white text-xs">
-                          {formatPrice(ord.totalAmountDZD)} DZD
-                        </p>
-                        <span className="text-[10px] text-silver/50 uppercase font-semibold">
-                          {ord.paymentMethod}
-                        </span>
+                        <div className="space-y-1">
+                          <div className="flex items-baseline gap-1">
+                            <span className="font-extrabold text-white text-xs sm:text-sm tracking-tight">
+                              {formatPrice(ord.totalAmountDZD)}
+                            </span>
+                            <span className="text-[10px] font-bold text-cyan">DZD</span>
+                          </div>
+                          <div>{getPaymentMethodBadge(ord.paymentMethod)}</div>
+                        </div>
                       </td>
 
                       {/* Payment Proof Column */}
@@ -543,18 +596,20 @@ export default function AdminOrdersPage() {
                 </div>
 
                 {/* Payment & Notes */}
-                <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-                  <p className="text-silver/70">
-                    <span className="font-bold text-white">Mode de règlement :</span>{" "}
-                    <span className="font-semibold text-cyan uppercase">
-                      {selectedOrder.paymentMethod}
-                    </span>
-                  </p>
+                <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-silver/70">Mode de règlement :</span>
+                    <div>{getPaymentMethodBadge(selectedOrder.paymentMethod)}</div>
+                  </div>
                   {selectedOrder.notes && (
-                    <p className="text-silver/70">
-                      <span className="font-bold text-white">Remarques client :</span>{" "}
-                      {selectedOrder.notes}
-                    </p>
+                    <div className="pt-2 border-t border-white/5">
+                      <p className="text-[10px] font-bold uppercase text-silver/50 mb-1">
+                        Remarques ou instructions client :
+                      </p>
+                      <p className="text-xs text-silver/80 bg-white/[0.02] p-2.5 rounded-xl border border-white/5 whitespace-pre-wrap">
+                        {selectedOrder.notes}
+                      </p>
+                    </div>
                   )}
                 </div>
 

@@ -14,6 +14,7 @@ import {
   Layers,
   PhoneCall,
   CheckCircle2,
+  ExternalLink,
 } from "lucide-react";
 import { adminGetAnalytics, adminUpdateOrderStatus } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
@@ -324,10 +325,36 @@ export default function AdminDashboardPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {pendingQueue.map((order: any) => {
-              const cleanPhone = order.whatsappPhone.replace(/[^0-9]/g, "");
-              const waUrl = `https://wa.me/213${cleanPhone.replace(/^0/, "")}?text=${encodeURIComponent(
-                `Bonjour ${order.clientName}, Digitex vous contacte pour votre commande ${order.orderNumber}.`
-              )}`;
+              const isInstagram =
+                order.contactChannel === "INSTAGRAM" ||
+                (!order.whatsappPhone && order.contactValue?.startsWith("@"));
+              const handle = (order.contactValue || order.clientName || "").replace(/^@/, "");
+              const phone = order.contactValue || order.whatsappPhone || "";
+              const cleanPhone = phone.replace(/[^0-9]/g, "");
+              const waNumber = cleanPhone.startsWith("0") ? `213${cleanPhone.slice(1)}` : cleanPhone;
+              const contactUrl = isInstagram
+                ? `https://instagram.com/${handle}`
+                : `https://wa.me/${waNumber}?text=${encodeURIComponent(
+                    `Bonjour ! Digitex vous contacte pour votre commande ${order.orderNumber}.`
+                  )}`;
+              const contactDisplay = isInstagram ? `@${handle}` : phone || "Client";
+
+              const getPaymentLabel = (pm: string) => {
+                switch ((pm || "").toLowerCase().trim()) {
+                  case "baridimob":
+                    return "BaridiMob";
+                  case "ccp":
+                    return "CCP / Poste";
+                  case "binance":
+                    return "Binance Pay";
+                  case "redotpay":
+                    return "RedotPay";
+                  case "flexy":
+                    return "Flexy";
+                  default:
+                    return pm || "Inconnu";
+                }
+              };
 
               return (
                 <div
@@ -340,11 +367,14 @@ export default function AdminDashboardPage() {
                         {order.orderNumber}
                       </span>
                       <p className="text-xs font-bold text-white mt-1">
-                        {order.clientName} &bull;{" "}
-                        <span className="text-silver/70">{order.whatsappPhone}</span>
+                        {contactDisplay}
                       </p>
-                      <p className="text-[11px] text-silver/50">
-                        {formatPrice(order.totalAmountDZD)} DZD &bull; {order.paymentMethod}
+                      <p className="text-[11px] text-silver/60 mt-0.5 flex items-center gap-1.5">
+                        <span className="font-bold text-white">
+                          {formatPrice(order.totalAmountDZD)} DZD
+                        </span>
+                        <span>&bull;</span>
+                        <span className="text-cyan font-semibold">{getPaymentLabel(order.paymentMethod)}</span>
                       </p>
                     </div>
 
@@ -355,13 +385,26 @@ export default function AdminDashboardPage() {
 
                   <div className="flex items-center gap-2 pt-2 border-t border-white/5">
                     <a
-                      href={waUrl}
+                      href={contactUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex-1 py-1.5 px-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center justify-center gap-1.5 border border-emerald-500/30 transition"
+                      className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition ${
+                        isInstagram
+                          ? "bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 border-pink-500/30"
+                          : "bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border-emerald-500/30"
+                      }`}
                     >
-                      <PhoneCall className="w-3.5 h-3.5" />
-                      <span>WhatsApp</span>
+                      {isInstagram ? (
+                        <>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>Instagram</span>
+                        </>
+                      ) : (
+                        <>
+                          <PhoneCall className="w-3.5 h-3.5" />
+                          <span>WhatsApp</span>
+                        </>
+                      )}
                     </a>
                     <button
                       onClick={() => handleQuickStatusUpdate(order.id, "CONFIRMED")}
