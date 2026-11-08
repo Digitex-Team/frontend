@@ -78,22 +78,22 @@ export default function AdminSalesAccountingPage() {
   const loadData = useCallback(async (selectedPeriod: PeriodType = period, page = historyPage) => {
     try {
       setLoading(true);
-      const [statsData, historyData, productsData] = await Promise.all([
-        adminGetSalesStats(selectedPeriod),
-        adminGetSalesHistory({
-          period: selectedPeriod,
-          search: historySearch.trim() || undefined,
-          page,
-          limit: 15,
-        }),
-        adminGetProducts({ limit: 100 }),
-      ]);
-
+      const statsData = await adminGetSalesStats(selectedPeriod);
       setStats(statsData);
+      if (statsData?.productCounters) {
+        setProductsList(statsData.productCounters);
+      }
+
+      const historyData = await adminGetSalesHistory({
+        period: selectedPeriod,
+        search: historySearch.trim() || undefined,
+        page,
+        limit: 15,
+      });
+
       setHistory(historyData?.sales || []);
       setHistoryTotalPages(historyData?.meta?.totalPages || 1);
       setHistoryTotalCount(historyData?.meta?.total || 0);
-      setProductsList(productsData?.products || []);
     } catch (err) {
       console.error("Failed to load sales accounting data", err);
     } finally {
