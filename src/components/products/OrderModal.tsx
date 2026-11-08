@@ -109,7 +109,7 @@ export function OrderModal({
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          className="glass-elevated p-6 sm:p-8 rounded-3xl border border-white/10 max-w-lg w-full relative overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)]"
+          className="glass-elevated p-5 sm:p-8 rounded-3xl border border-white/10 max-w-lg w-full relative max-h-[92vh] overflow-y-auto shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)]"
         >
           {/* Close button */}
           <button

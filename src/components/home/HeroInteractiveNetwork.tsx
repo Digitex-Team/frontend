@@ -27,7 +27,6 @@ import { formatPrice } from "@/lib/utils";
 interface ServiceNode {
   id: string;
   name: string;
-  categorySlug: string;
   popularItems: string;
   icon: React.ComponentType<{ className?: string }>;
   color: string;
@@ -38,7 +37,6 @@ const leftNodes: ServiceNode[] = [
   {
     id: "streaming",
     name: "Streaming 4K",
-    categorySlug: "streaming",
     popularItems: "Netflix 4K • Prime Video",
     icon: Tv,
     color: "#e50914",
@@ -47,7 +45,6 @@ const leftNodes: ServiceNode[] = [
   {
     id: "vpn",
     name: "VPN & Sécurité",
-    categorySlug: "utilities",
     popularItems: "NordVPN • ExpressVPN",
     icon: ShieldCheck,
     color: "#00BFFF",
@@ -56,7 +53,6 @@ const leftNodes: ServiceNode[] = [
   {
     id: "licenses",
     name: "Clés & Licences",
-    categorySlug: "utilities",
     popularItems: "Windows 11 • Office 365",
     icon: KeyRound,
     color: "#0078d4",
@@ -65,7 +61,6 @@ const leftNodes: ServiceNode[] = [
   {
     id: "music",
     name: "Audio & Musique",
-    categorySlug: "streaming",
     popularItems: "Spotify • Tidal HiFi",
     icon: Music,
     color: "#1db954",
@@ -77,7 +72,6 @@ const rightNodes: ServiceNode[] = [
   {
     id: "ai",
     name: "Outils IA",
-    categorySlug: "ai",
     popularItems: "ChatGPT Plus • Claude Pro",
     icon: Sparkles,
     color: "#10a37f",
@@ -86,7 +80,6 @@ const rightNodes: ServiceNode[] = [
   {
     id: "design",
     name: "Design & Vidéo",
-    categorySlug: "design",
     popularItems: "Canva Pro • CapCut Pro",
     icon: Palette,
     color: "#00c4cc",
@@ -95,7 +88,6 @@ const rightNodes: ServiceNode[] = [
   {
     id: "cloud",
     name: "Cloud & Stockage",
-    categorySlug: "utilities",
     popularItems: "Google One 2To • iCloud",
     icon: Cloud,
     color: "#075BDB",
@@ -104,7 +96,6 @@ const rightNodes: ServiceNode[] = [
   {
     id: "dev",
     name: "Études & Dev",
-    categorySlug: "ai",
     popularItems: "GitHub Copilot • JetBrains",
     icon: Terminal,
     color: "#9333ea",
@@ -293,20 +284,14 @@ export function HeroInteractiveNetwork() {
                     ease: "easeInOut",
                     delay: motionConfig.delay,
                   }}
-                  onMouseEnter={() => setHoveredNode(node.id)}
-                  onMouseLeave={() => setHoveredNode(null)}
-                  className={`w-full transition-transform duration-300 ${node.offsetClass}`}
+                  className={`w-full transition-transform duration-300 select-none cursor-default ${node.offsetClass}`}
                 >
-                  <Link
-                    href={`/products?category=${node.categorySlug}`}
-                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl glass-base transition-all duration-300 block ${isHovered
-                        ? "border-[#00BFFF]/60 shadow-[0_0_20px_rgba(0,191,255,0.3)] bg-navy/80 scale-[1.02]"
-                        : "border-white/10 hover:border-[#00BFFF]/40"
-                      }`}
+                  <div
+                    className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl glass-base border border-white/10 hover:border-[#00BFFF]/30 transition-all duration-300"
                   >
                     <div className="flex items-center gap-3 w-full">
                       <div
-                        className="w-9 h-9 rounded-xl bg-[#05070C] border border-[#C8D5E5]/15 flex items-center justify-center shrink-0"
+                        className="w-9 h-9 rounded-xl bg-[#05070C] border border-[#C8D5E5]/15 flex items-center justify-center shrink-0 shadow-sm"
                         style={{ color: node.color }}
                       >
                         <IconComp className="w-4 h-4" />
@@ -322,11 +307,11 @@ export function HeroInteractiveNetwork() {
                       </div>
 
                       <span
-                        className="w-1.5 h-1.5 rounded-full shrink-0"
-                        style={{ backgroundColor: node.color }}
+                        className="w-1.5 h-1.5 rounded-full shrink-0 shadow-[0_0_8px_currentColor]"
+                        style={{ backgroundColor: node.color, color: node.color }}
                       />
                     </div>
-                  </Link>
+                  </div>
                 </motion.div>
               );
             })}
@@ -364,7 +349,7 @@ export function HeroInteractiveNetwork() {
                   }}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Rechercher un service, outil IA ou abonnement..."
-                  className="w-full bg-transparent border-none outline-none text-white placeholder-[#C8D5E5]/40 text-xs sm:text-sm px-2.5 md:px-3"
+                  className="w-full bg-transparent border-none outline-none text-white placeholder-[#C8D5E5]/40 text-sm px-2.5 md:px-3"
                 />
                 {searchQuery && (
                   <button
@@ -575,20 +560,14 @@ export function HeroInteractiveNetwork() {
                     ease: "easeInOut",
                     delay: motionConfig.delay,
                   }}
-                  onMouseEnter={() => setHoveredNode(node.id)}
-                  onMouseLeave={() => setHoveredNode(null)}
-                  className={`w-full transition-transform duration-300 ${node.offsetClass}`}
+                  className={`w-full transition-transform duration-300 select-none cursor-default ${node.offsetClass}`}
                 >
-                  <Link
-                    href={`/products?category=${node.categorySlug}`}
-                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl glass-base transition-all duration-300 block ${isHovered
-                        ? "border-[#00BFFF]/60 shadow-[0_0_20px_rgba(0,191,255,0.3)] bg-navy/80 scale-[1.02]"
-                        : "border-white/10 hover:border-[#00BFFF]/40"
-                      }`}
+                  <div
+                    className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl glass-base border border-white/10 hover:border-[#00BFFF]/30 transition-all duration-300"
                   >
                     <div className="flex items-center gap-3 w-full">
                       <div
-                        className="w-9 h-9 rounded-xl bg-[#05070C] border border-[#C8D5E5]/15 flex items-center justify-center shrink-0"
+                        className="w-9 h-9 rounded-xl bg-[#05070C] border border-[#C8D5E5]/15 flex items-center justify-center shrink-0 shadow-sm"
                         style={{ color: node.color }}
                       >
                         <IconComp className="w-4 h-4" />
@@ -604,11 +583,11 @@ export function HeroInteractiveNetwork() {
                       </div>
 
                       <span
-                        className="w-1.5 h-1.5 rounded-full shrink-0"
-                        style={{ backgroundColor: node.color }}
+                        className="w-1.5 h-1.5 rounded-full shrink-0 shadow-[0_0_8px_currentColor]"
+                        style={{ backgroundColor: node.color, color: node.color }}
                       />
                     </div>
-                  </Link>
+                  </div>
                 </motion.div>
               );
             })}
@@ -719,10 +698,9 @@ export function HeroInteractiveNetwork() {
             {[...leftNodes, ...rightNodes].map((node) => {
               const IconComp = node.icon;
               return (
-                <Link
+                <div
                   key={`mobile-${node.id}`}
-                  href={`/products?category=${node.categorySlug}`}
-                  className="flex items-center gap-2 p-2 rounded-xl glass-base border border-white/10 active:scale-95 transition-all block"
+                  className="flex items-center gap-2 p-2 rounded-xl glass-base border border-white/10 select-none cursor-default"
                 >
                   <div className="flex items-center gap-2 w-full">
                     <div
@@ -740,7 +718,7 @@ export function HeroInteractiveNetwork() {
                       </span>
                     </div>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>

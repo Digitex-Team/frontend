@@ -13,8 +13,6 @@ import {
   Eye,
   RefreshCw,
   X,
-  CreditCard,
-  User,
   ChevronLeft,
   ChevronRight,
   Trash2,
@@ -40,9 +38,15 @@ export default function AdminOrdersPage() {
     try {
       setLoading(true);
       const data = await adminGetOrders(statusFilter, search, targetPage, 10);
-      setOrders(data?.orders || []);
+      const ordersList = data?.orders || [];
+      const totalCount = data?.meta?.total || 0;
+      if (ordersList.length === 0 && targetPage > 1 && totalCount > 0) {
+        fetchOrders(Math.max(1, targetPage - 1));
+        return;
+      }
+      setOrders(ordersList);
       setTotalPages(data?.meta?.totalPages || 1);
-      setTotalCount(data?.meta?.total || 0);
+      setTotalCount(totalCount);
       setPage(data?.meta?.page || 1);
     } catch (e) {
       console.error("Failed to load orders", e);
@@ -170,11 +174,10 @@ export default function AdminOrdersPage() {
               <button
                 key={tab.id}
                 onClick={() => setStatusFilter(tab.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
-                  isActive
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${isActive
                     ? "bg-[#075BDB] text-white shadow-[0_0_15px_rgba(7,91,219,0.4)] border border-[#00BFFF]/40"
                     : "text-silver/60 hover:text-white hover:bg-white/5"
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -298,7 +301,7 @@ export default function AdminOrdersPage() {
               <strong className="text-white font-bold">{totalPages}</strong> ({totalCount} commandes)
             </span>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 flex-wrap justify-center">
               <button
                 onClick={() => {
                   const p = Math.max(1, page - 1);
@@ -319,11 +322,10 @@ export default function AdminOrdersPage() {
                     setPage(p);
                     fetchOrders(p);
                   }}
-                  className={`w-8 h-8 rounded-xl text-xs font-bold transition cursor-pointer ${
-                    p === page
+                  className={`w-8 h-8 rounded-xl text-xs font-bold transition cursor-pointer ${p === page
                       ? "bg-[#075BDB] text-white border border-[#00BFFF]"
                       : "bg-white/5 text-silver hover:bg-white/10 hover:text-white border border-white/5"
-                  }`}
+                    }`}
                 >
                   {p}
                 </button>
@@ -434,11 +436,10 @@ export default function AdminOrdersPage() {
                       <button
                         key={st}
                         onClick={() => handleStatusChange(selectedOrder.id, st)}
-                        className={`py-2 px-2 rounded-xl text-[10px] font-bold uppercase transition cursor-pointer border ${
-                          selectedOrder.status === st
+                        className={`py-2 px-2 rounded-xl text-[10px] font-bold uppercase transition cursor-pointer border ${selectedOrder.status === st
                             ? "bg-[#075BDB] text-white border-[#00BFFF]"
                             : "bg-white/5 text-silver/70 border-white/5 hover:bg-white/10 hover:text-white"
-                        }`}
+                          }`}
                       >
                         {st}
                       </button>

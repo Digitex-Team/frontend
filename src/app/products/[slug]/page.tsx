@@ -1,54 +1,47 @@
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { siteConfig } from "@/data/siteConfig";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
-import { getLiveProductBySlug, getLiveProducts } from "@/lib/api";
+import { getLiveProductBySlug } from "@/lib/api";
 
-export const dynamicParams = true;
+// Force dynamic rendering so every product (newly created or updated) renders live without build-time SSG locks
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  try {
-    const products = await getLiveProducts();
-    if (products && products.length > 0) {
-      return products.map((product) => ({
-        slug: product.slug,
-      }));
-    }
-  } catch (_e) {}
-  return [];
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getLiveProductBySlug(slug);
-
-  if (!product) {
-    return {
-      title: "Produit non trouvé — Digitex",
-    };
-  }
+  try {
+    const product = await getLiveProductBySlug(slug);
+    if (product) {
+      return {
+        title: `${product.name} — Abonnement Algérie | ${siteConfig.name}`,
+        description: `${product.shortDesc || product.name} Disponible en Algérie avec paiement sécurisé BaridiMob & CCP. Livraison 5 à 15 minutes.`,
+      };
+    }
+  } catch (_e) {}
 
   return {
-    title: `${product.name} — Abonnement Algérie | ${siteConfig.name}`,
-    description: `${product.shortDesc || product.name} Disponible en Algérie avec paiement sécurisé BaridiMob & CCP. Livraison 5 à 15 minutes.`,
+    title: `Détails Produit — ${siteConfig.name}`,
   };
 }
 
 // Inner async component wrapped in Suspense for Next.js Instant Navigation
 async function ProductDetailContent({ params }: Props) {
   const { slug } = await params;
-  const product = await getLiveProductBySlug(slug);
+  let product = null;
 
-  if (!product) {
-    notFound();
+  try {
+    product = await getLiveProductBySlug(slug);
+  } catch (_e) {
+    product = null;
   }
 
-  return <ProductDetailClient product={product} />;
+  // Pass both initialProduct (from SSR if successful) and slug (for client fallback if SSR could not reach backend)
+  return <ProductDetailClient initialProduct={product} slug={slug} />;
 }
 
 // Loading Skeleton matching the exact glassmorphic structure

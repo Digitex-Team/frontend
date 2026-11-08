@@ -30,7 +30,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md lg:hidden"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md md:hidden"
           />
 
           {/* Drawer */}
@@ -39,7 +39,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 220 }}
-            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-xs bg-[#0E1726] border-l border-white/10 p-5 sm:p-6 shadow-2xl flex flex-col justify-between lg:hidden overflow-y-auto"
+            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-xs bg-[#0E1726] border-l border-white/10 p-5 sm:p-6 shadow-2xl flex flex-col justify-between md:hidden overflow-y-auto"
           >
             <div>
               {/* Header */}

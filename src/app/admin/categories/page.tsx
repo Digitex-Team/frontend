@@ -13,12 +13,6 @@ import {
   AlertCircle,
   Package,
   RefreshCw,
-  Eye,
-  Shield,
-  Palette,
-  Tv,
-  ShieldCheck,
-  Zap,
 } from "lucide-react";
 import {
   adminGetCategories,
@@ -337,7 +331,7 @@ export default function AdminCategoriesPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="glass-elevated p-6 sm:p-8 rounded-3xl border border-white/10 max-w-md w-full shadow-[0_25px_60px_rgba(0,0,0,0.8)]"
+              className="glass-elevated p-5 sm:p-8 rounded-3xl border border-white/10 max-w-md w-full max-h-[92vh] overflow-y-auto shadow-[0_25px_60px_rgba(0,0,0,0.8)]"
             >
               <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
                 <div className="flex items-center gap-2.5">
@@ -415,11 +409,10 @@ export default function AdminCategoriesPage() {
                         type="button"
                         key={icon}
                         onClick={() => setFormIconName(icon)}
-                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border transition ${
-                          formIconName === icon
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border transition ${formIconName === icon
                             ? "bg-[#075BDB] border-[#00BFFF] text-white"
                             : "bg-white/5 border-white/10 text-silver/60 hover:text-white"
-                        }`}
+                          }`}
                       >
                         {icon}
                       </button>

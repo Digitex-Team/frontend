@@ -120,12 +120,12 @@ export function ConfirmDeleteModal({
             </div>
 
             {/* Action Buttons */}
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-6 flex flex-col sm:flex-row items-center gap-2.5">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={loading}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-silver hover:text-white transition disabled:opacity-40 cursor-pointer"
+                className="w-full sm:flex-1 py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-silver hover:text-white transition disabled:opacity-40 cursor-pointer order-2 sm:order-1"
               >
                 Annuler
               </button>
@@ -134,7 +134,7 @@ export function ConfirmDeleteModal({
                 type="button"
                 onClick={onConfirm}
                 disabled={loading}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white text-xs font-bold transition shadow-[0_0_20px_rgba(225,29,72,0.4)] flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                className="w-full sm:flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white text-xs font-bold transition shadow-[0_0_20px_rgba(225,29,72,0.4)] flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer order-1 sm:order-2"
               >
                 {loading ? (
                   <>

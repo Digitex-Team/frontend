@@ -25,7 +25,11 @@ export interface SmartSearchResult {
 }
 
 // Normalize API Base URL whether configured with or without '/api/v1'
-const RAW_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000").replace(/\/+$/, "");
+const RAW_URL = (
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.API_URL ||
+  "http://localhost:5000"
+).replace(/\/+$/, "");
 export const ROOT_SERVER_URL = RAW_URL.replace(/\/api\/v1$/, "");
 export const API_BASE_URL = `${ROOT_SERVER_URL}/api/v1`;
 
@@ -177,12 +181,39 @@ export async function getPaginatedProducts(query?: {
 }
 
 export async function getLiveProductBySlug(slug: string): Promise<Product | null> {
+  if (!slug) return null;
+
+  // On Server (Next.js SSR/Server Component), try native fetch with cache: "no-store"
+  if (typeof window === "undefined") {
+    try {
+      const url = `${API_BASE_URL}/products/${encodeURIComponent(slug)}`;
+      const res = await fetch(url, {
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data) {
+          return mapBackendProductToFrontend(data);
+        }
+      }
+    } catch (_fetchErr) {
+      // Fallback to apiClient
+    }
+  }
+
   try {
-    const res = await apiClient.get(`/products/${slug}`);
+    const res = await apiClient.get(`/products/${encodeURIComponent(slug)}`);
     if (res.data) {
       return mapBackendProductToFrontend(res.data);
     }
-  } catch (_err) {}
+  } catch (err: any) {
+    if (err?.response?.status !== 404) {
+      console.warn(`[API] getLiveProductBySlug('${slug}') notice:`, err?.message || err);
+    }
+  }
   return null;
 }
 

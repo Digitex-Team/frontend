@@ -4,60 +4,57 @@ import React from "react";
 import Image from "next/image";
 
 const partnerLogos = [
-  { name: "ChatGPT", src: "/chatgpt.png", width: 140, height: 40 },
-  { name: "Canva", src: "/canva.png", width: 130, height: 40 },
-  { name: "Google Gemini", src: "/gemini.png", width: 110, height: 40 },
-  { name: "PlayStation", src: "/playstation.png", width: 130, height: 40 },
-  { name: "Xbox", src: "/xbox.png", width: 110, height: 40 },
+  { name: "ChatGPT", src: "/chatgpt.png", width: 120, height: 32 },
+  { name: "Canva", src: "/canva.png", width: 110, height: 32 },
+  { name: "Google Gemini", src: "/gemini.png", width: 100, height: 32 },
+  { name: "Netflix", src: "/netflix.png", width: 95, height: 32 },
+  { name: "Spotify", src: "/spotify.png", width: 95, height: 32 },
+  { name: "PlayStation", src: "/playstation.png", width: 105, height: 32 },
+  { name: "Xbox", src: "/xbox.png", width: 90, height: 32 },
 ];
 
-// Replicate sets to ensure continuous smooth infinite marquee without gaps
-const singleSet = [...partnerLogos, ...partnerLogos, ...partnerLogos];
-const marqueeItems = [...singleSet, ...singleSet];
+// Two identical sets so translateX(-50%) creates a seamless, gap-free infinite loop
+const marqueeItems = [...partnerLogos, ...partnerLogos];
 
 export function BrandsMarquee() {
   return (
-    <section className="py-5 sm:py-6 relative overflow-hidden bg-transparent">
-      {/* Reduced width wrapper */}
-      <div className="max-w-4xl mx-auto px-4 relative">
-        {/* Left Blur & Fade Edge */}
+    <section className="py-3 sm:py-4 relative overflow-hidden bg-transparent border-b border-white/[0.04]">
+      {/* Sleek, proportional width wrapper */}
+      <div className="max-w-5xl mx-auto px-4 relative">
+        {/* Left Smooth Fade (No boxy backdrop-blur artifacts) */}
         <div
-          className="pointer-events-none absolute left-0 top-0 bottom-0 w-20 sm:w-28 z-20 backdrop-blur-[3px]"
-          style={{
-            background: "linear-gradient(to right, #05070C 0%, rgba(5, 7, 12, 0.85) 55%, transparent 100%)",
-          }}
+          className="pointer-events-none absolute left-0 top-0 bottom-0 w-14 sm:w-24 z-10 bg-gradient-to-r from-[#05070C] via-[#05070C]/90 to-transparent"
           aria-hidden="true"
         />
 
-        {/* Right Blur & Fade Edge */}
+        {/* Right Smooth Fade (No boxy backdrop-blur artifacts) */}
         <div
-          className="pointer-events-none absolute right-0 top-0 bottom-0 w-20 sm:w-28 z-20 backdrop-blur-[3px]"
-          style={{
-            background: "linear-gradient(to left, #05070C 0%, rgba(5, 7, 12, 0.85) 55%, transparent 100%)",
-          }}
+          className="pointer-events-none absolute right-0 top-0 bottom-0 w-14 sm:w-24 z-10 bg-gradient-to-l from-[#05070C] via-[#05070C]/90 to-transparent"
           aria-hidden="true"
         />
 
-        {/* Marquee Track with CSS mask feathered transparency */}
+        {/* Marquee Track with refined feathered transparency mask */}
         <div
           className="flex overflow-hidden select-none py-1"
           style={{
-            maskImage: "linear-gradient(to right, transparent 0%, black 16%, black 84%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 16%, black 84%, transparent 100%)",
+            maskImage:
+              "linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)",
           }}
         >
           <div className="animate-marquee flex items-center shrink-0">
             {marqueeItems.map((logo, idx) => (
               <div
                 key={`${logo.name}-${idx}`}
-                className="flex items-center justify-center px-6 sm:px-8 shrink-0 select-none"
+                className="flex items-center justify-center px-4 sm:px-7 shrink-0 select-none"
               >
                 <Image
                   src={logo.src}
                   alt={logo.name}
                   width={logo.width}
                   height={logo.height}
-                  className="h-7 sm:h-8 w-auto max-h-8 max-w-[120px] object-contain opacity-75 hover:opacity-100 transition-opacity duration-300 drop-shadow-[0_0_10px_rgba(255,255,255,0.06)]"
+                  className="h-5 sm:h-6 w-auto max-h-6 max-w-[100px] object-contain opacity-60 hover:opacity-95 transition-opacity duration-200 drop-shadow-[0_0_8px_rgba(255,255,255,0.05)]"
                   style={{ width: "auto", height: "auto" }}
                 />
               </div>

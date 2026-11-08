@@ -93,6 +93,10 @@ export default function AdminProductsPage() {
         });
 
         if (data && data.products) {
+          if (data.products.length === 0 && targetPage > 1 && (data.meta?.total || 0) > 0) {
+            fetchProductsList(Math.max(1, targetPage - 1), targetSearch, targetCat);
+            return;
+          }
           setProducts(data.products);
           setTotalPages(data.meta.totalPages || 1);
           setTotalCount(data.meta.total || 0);
@@ -395,8 +399,8 @@ export default function AdminProductsPage() {
           )}
         </form>
 
-        <div className="flex items-center gap-3">
-          <div className="w-56">
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="w-full sm:w-56">
             <CustomSelect
               value={selectedCategory}
               onChange={(val) => {
@@ -550,7 +554,7 @@ export default function AdminProductsPage() {
               <strong className="text-white font-bold">{totalPages}</strong> ({totalCount} produits)
             </span>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 flex-wrap justify-center">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   ChevronRight,
@@ -23,6 +24,7 @@ import { siteConfig } from "@/data/siteConfig";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/utils";
 import { OrderModal } from "@/components/products/OrderModal";
+import { getLiveProductBySlug } from "@/lib/api";
 
 // Vector Icons for Messengers (matching design system)
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -60,10 +62,66 @@ function DiscordIcon({ className }: { className?: string }) {
 }
 
 interface ProductDetailClientProps {
-  product: Product;
+  product?: Product;
+  initialProduct?: Product | null;
+  slug?: string;
 }
 
-export function ProductDetailClient({ product }: ProductDetailClientProps) {
+export function ProductDetailClient({
+  product: directProduct,
+  initialProduct,
+  slug,
+}: ProductDetailClientProps) {
+  const [product, setProduct] = useState<Product | null>(directProduct || initialProduct || null);
+  const [loading, setLoading] = useState<boolean>(!directProduct && !initialProduct);
+
+  useEffect(() => {
+    if (directProduct || initialProduct) {
+      setProduct(directProduct || initialProduct || null);
+      setLoading(false);
+      return;
+    }
+
+    if (slug) {
+      setLoading(true);
+      getLiveProductBySlug(slug)
+        .then((fetched) => {
+          if (fetched) {
+            setProduct(fetched);
+          } else {
+            notFound();
+          }
+        })
+        .catch(() => {
+          notFound();
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [slug, directProduct, initialProduct]);
+
+  // Loading skeleton while fetching client-side fallback
+  if (loading || !product) {
+    return (
+      <div className="py-8 md:py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-pulse">
+        <div className="h-4 w-48 bg-white/5 rounded-full mb-8" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+          <div className="lg:col-span-5 h-[380px] rounded-3xl bg-white/[0.03] border border-white/10" />
+          <div className="lg:col-span-7 space-y-6">
+            <div className="h-10 w-3/4 bg-white/10 rounded-xl" />
+            <div className="h-16 w-full bg-white/5 rounded-xl" />
+            <div className="h-48 w-full rounded-3xl bg-white/[0.04] border border-white/10" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return <ProductDetailLoadedView product={product} />;
+}
+
+function ProductDetailLoadedView({ product }: { product: Product }) {
   // Resolve available plans: use product.plans or create a default plan from price & duration
   const availablePlans: SubscriptionTier[] =
     product.plans && product.plans.length > 0
@@ -83,6 +141,13 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const defaultPlan =
     availablePlans.find((p) => p.isPopular) || availablePlans[0];
   const [currentPlan, setCurrentPlan] = useState<SubscriptionTier>(defaultPlan);
+
+  useEffect(() => {
+    if (availablePlans.length > 0) {
+      const active = availablePlans.find((p) => p.isPopular) || availablePlans[0];
+      setCurrentPlan(active);
+    }
+  }, [product]);
 
   const [copied, setCopied] = useState<boolean>(false);
   const [orderModalOpen, setOrderModalOpen] = useState<boolean>(false);

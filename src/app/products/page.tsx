@@ -82,7 +82,12 @@ function CatalogContent() {
         limit: 9,
       });
 
-      setProducts(res.products || []);
+      const fetched = res.products || [];
+      if (fetched.length === 0 && page > 1 && (res.meta?.total || 0) > 0) {
+        setPage(Math.max(1, page - 1));
+        return;
+      }
+      setProducts(fetched);
       setMeta(res.meta);
     } catch (e) {
       console.error("Failed to load catalog products", e);
@@ -223,7 +228,7 @@ function CatalogContent() {
                   <strong className="text-white font-bold">{meta.total}</strong> abonnements (Page {meta.page} sur {meta.totalPages})
                 </span>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap justify-center">
                   <button
                     onClick={() => handlePageChange(Math.max(1, page - 1))}
                     disabled={page <= 1}

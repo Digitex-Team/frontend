@@ -129,7 +129,7 @@ export function CustomSelect({
             exit={{ opacity: 0, scale: 0.96, y: -6 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             className={cn(
-              "absolute z-[60] mt-1.5 min-w-[200px] w-full max-h-64 overflow-y-auto rounded-2xl bg-[#090E1A]/95 backdrop-blur-2xl border border-white/15 p-1.5 shadow-[0_15px_50px_rgba(5,7,12,0.9),0_0_25px_rgba(0,191,255,0.15)] focus:outline-none",
+              "absolute z-[60] mt-1.5 min-w-[180px] max-w-[calc(100vw-2rem)] w-full max-h-64 overflow-y-auto rounded-2xl bg-[#090E1A]/95 backdrop-blur-2xl border border-white/15 p-1.5 shadow-[0_15px_50px_rgba(5,7,12,0.9),0_0_25px_rgba(0,191,255,0.15)] focus:outline-none",
               dropdownClassName
             )}
             role="listbox"
