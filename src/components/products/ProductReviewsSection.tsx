@@ -9,7 +9,6 @@ import {
   X,
   Send,
   AlertCircle,
-  ThumbsUp,
   ShieldCheck,
 } from "lucide-react";
 import { Review } from "@/types";

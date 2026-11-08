@@ -138,7 +138,6 @@ export function HeroInteractiveNetwork() {
   const [searchResult, setSearchResult] = useState<SmartSearchResult | null>(null);
   const [searchLoading, setSearchLoading] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
@@ -271,7 +270,6 @@ export function HeroInteractiveNetwork() {
           <div className="hidden lg:flex flex-col gap-4 w-52 xl:w-56 shrink-0 z-10">
             {leftNodes.map((node, idx) => {
               const IconComp = node.icon;
-              const isHovered = hoveredNode === node.id;
               const motionConfig = leftMotionConfigs[idx] || leftMotionConfigs[0];
               return (
                 <motion.div
@@ -547,7 +545,6 @@ export function HeroInteractiveNetwork() {
           <div className="hidden lg:flex flex-col gap-4 w-52 xl:w-56 shrink-0 z-10">
             {rightNodes.map((node, idx) => {
               const IconComp = node.icon;
-              const isHovered = hoveredNode === node.id;
               const motionConfig = rightMotionConfigs[idx] || rightMotionConfigs[0];
               return (
                 <motion.div
@@ -618,67 +615,61 @@ export function HeroInteractiveNetwork() {
                 </linearGradient>
               </defs>
 
-              {leftCablePaths.map((cable, i) => {
-                const isHovered = hoveredNode === leftNodes[i]?.id;
-                return (
-                  <g key={`l-cable-${i}`}>
-                    <path
-                      d={cable.d}
-                      stroke="url(#beam-glow-l)"
-                      strokeWidth={isHovered ? 2.5 : 1.5}
-                      strokeOpacity={isHovered ? 0.9 : 0.25}
-                      className="transition-all duration-300"
+              {leftCablePaths.map((cable, i) => (
+                <g key={`l-cable-${i}`}>
+                  <path
+                    d={cable.d}
+                    stroke="url(#beam-glow-l)"
+                    strokeWidth={1.5}
+                    strokeOpacity={0.3}
+                    className="transition-all duration-300"
+                  />
+                  <path
+                    d={cable.d}
+                    stroke="#00BFFF"
+                    strokeWidth={2}
+                    strokeDasharray="16 110"
+                    strokeDashoffset="126"
+                    className="animate-pulse"
+                  >
+                    <animate
+                      attributeName="stroke-dashoffset"
+                      from="126"
+                      to="0"
+                      dur={cable.dur}
+                      repeatCount="indefinite"
                     />
-                    <path
-                      d={cable.d}
-                      stroke="#00BFFF"
-                      strokeWidth={isHovered ? 3 : 2}
-                      strokeDasharray="16 110"
-                      strokeDashoffset="126"
-                      className="animate-pulse"
-                    >
-                      <animate
-                        attributeName="stroke-dashoffset"
-                        from="126"
-                        to="0"
-                        dur={cable.dur}
-                        repeatCount="indefinite"
-                      />
-                    </path>
-                  </g>
-                );
-              })}
+                  </path>
+                </g>
+              ))}
 
-              {rightCablePaths.map((cable, i) => {
-                const isHovered = hoveredNode === rightNodes[i]?.id;
-                return (
-                  <g key={`r-cable-${i}`}>
-                    <path
-                      d={cable.d}
-                      stroke="url(#beam-glow-r)"
-                      strokeWidth={isHovered ? 2.5 : 1.5}
-                      strokeOpacity={isHovered ? 0.9 : 0.25}
-                      className="transition-all duration-300"
+              {rightCablePaths.map((cable, i) => (
+                <g key={`r-cable-${i}`}>
+                  <path
+                    d={cable.d}
+                    stroke="url(#beam-glow-r)"
+                    strokeWidth={1.5}
+                    strokeOpacity={0.3}
+                    className="transition-all duration-300"
+                  />
+                  <path
+                    d={cable.d}
+                    stroke="#00BFFF"
+                    strokeWidth={2}
+                    strokeDasharray="16 110"
+                    strokeDashoffset="126"
+                    className="animate-pulse"
+                  >
+                    <animate
+                      attributeName="stroke-dashoffset"
+                      from="126"
+                      to="0"
+                      dur={cable.dur}
+                      repeatCount="indefinite"
                     />
-                    <path
-                      d={cable.d}
-                      stroke="#00BFFF"
-                      strokeWidth={isHovered ? 3 : 2}
-                      strokeDasharray="16 110"
-                      strokeDashoffset="126"
-                      className="animate-pulse"
-                    >
-                      <animate
-                        attributeName="stroke-dashoffset"
-                        from="126"
-                        to="0"
-                        dur={cable.dur}
-                        repeatCount="indefinite"
-                      />
-                    </path>
-                  </g>
-                );
-              })}
+                  </path>
+                </g>
+              ))}
             </svg>
           </div>
         </div>

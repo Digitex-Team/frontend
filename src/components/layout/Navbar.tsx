@@ -4,7 +4,7 @@ import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { MessageCircle, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { siteConfig } from "@/data/siteConfig";
 import { MobileNav } from "./MobileNav";
 

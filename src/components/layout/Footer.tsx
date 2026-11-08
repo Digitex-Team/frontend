@@ -3,7 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MessageCircle } from "lucide-react";
 import { siteConfig } from "@/data/siteConfig";
 
 function DiscordIcon({ className }: { className?: string }) {
@@ -34,7 +33,6 @@ function FacebookIcon({ className }: { className?: string }) {
 
 export function Footer() {
   const currentYear = 2026;
-  const whatsappUrl = `https://wa.me/${siteConfig.whatsappNumber.replace(/[^0-9]/g, "")}`;
 
   return (
     <footer className="w-full border-t border-[#C8D5E5]/10 bg-[#05070C] py-4 md:py-5">

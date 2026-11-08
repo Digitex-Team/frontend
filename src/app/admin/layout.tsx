@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   Layers,
+  Calculator,
 } from "lucide-react";
 import { adminGetProfile, adminLogout } from "@/lib/api";
 
@@ -110,6 +111,7 @@ export default function AdminLayout({
     { href: "/admin/categories", label: "Gestion Catégories", icon: Layers },
     { href: "/admin/products", label: "Gestion Produits & Tiers", icon: Package },
     { href: "/admin/orders", label: "Commandes Clients", icon: ShoppingBag },
+    { href: "/admin/sales", label: "Ventes & Comptabilité", icon: Calculator },
   ];
 
   return (
@@ -152,9 +154,8 @@ export default function AdminLayout({
 
       {/* Sidebar Navigation (Desktop Static / Mobile Drawer) */}
       <aside
-        className={`${
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        } transition-transform duration-300 ease-in-out fixed md:sticky top-0 bottom-0 left-0 w-72 md:w-64 max-w-[85vw] md:max-w-none border-r border-white/10 bg-[#0E1726] md:bg-[#0E1726]/80 md:backdrop-blur-2xl p-5 shrink-0 z-50 md:z-20 h-screen flex flex-col justify-between overflow-y-auto`}
+        className={`${mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          } transition-transform duration-300 ease-in-out fixed md:sticky top-0 bottom-0 left-0 w-72 md:w-64 max-w-[85vw] md:max-w-none border-r border-white/10 bg-[#0E1726] md:bg-[#0E1726]/80 md:backdrop-blur-2xl p-5 shrink-0 z-50 md:z-20 h-screen flex flex-col justify-between overflow-y-auto`}
       >
         <div>
           {/* Brand Header with Close on Mobile */}
@@ -210,11 +211,10 @@ export default function AdminLayout({
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                    isActive
-                      ? "bg-[#075BDB] text-white shadow-[0_0_20px_rgba(7,91,219,0.4)] border border-[#00BFFF]/40"
-                      : "text-silver/70 hover:text-white hover:bg-white/5 border border-transparent"
-                  }`}
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${isActive
+                    ? "bg-[#075BDB] text-white shadow-[0_0_20px_rgba(7,91,219,0.4)] border border-[#00BFFF]/40"
+                    : "text-silver/70 hover:text-white hover:bg-white/5 border border-transparent"
+                    }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-[#00BFFF]"}`} />
                   <span>{link.label}</span>

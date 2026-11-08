@@ -1,14 +1,9 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowLeft, Sparkles, MessageCircle, Home, ShoppingBag } from "lucide-react";
+import { Sparkles, Home, ShoppingBag } from "lucide-react";
 import { siteConfig } from "@/data/siteConfig";
 
 export default function NotFound() {
-  const cleanPhone = (siteConfig.whatsappSalesNumber || siteConfig.whatsappNumber || "").replace(/[^0-9]/g, "");
-  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-    "Bonjour Digitex, je recherche un abonnement spécifique qui n'apparaît pas sur le site."
-  )}`;
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16 relative overflow-hidden">

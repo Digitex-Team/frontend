@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense, useEffect, useState, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Sparkles,
@@ -9,7 +9,6 @@ import {
   RotateCcw,
   ChevronLeft,
   ChevronRight,
-  Layers,
 } from "lucide-react";
 import { Product } from "@/types";
 import { ProductFilters } from "@/components/products/ProductFilters";
@@ -20,7 +19,6 @@ import { SortOption } from "@/hooks/useProductFilter";
 
 function CatalogContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const initialCat = searchParams.get("category") || "all";
   const initialSearch = searchParams.get("search") || "";
@@ -104,10 +102,21 @@ function CatalogContent() {
   const handleCategoryChange = (cat: string) => {
     setSelectedCategory(cat);
     setPage(1);
+    const params = new URLSearchParams();
+    if (cat && cat !== "all") params.set("category", cat);
+    if (searchQuery.trim()) params.set("search", searchQuery.trim());
+    const qs = params.toString();
+    window.history.replaceState(null, "", `/products${qs ? `?${qs}` : ""}`);
   };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
+    const params = new URLSearchParams();
+    if (selectedCategory && selectedCategory !== "all") params.set("category", selectedCategory);
+    if (searchQuery.trim()) params.set("search", searchQuery.trim());
+    if (newPage > 1) params.set("page", String(newPage));
+    const qs = params.toString();
+    window.history.replaceState(null, "", `/products${qs ? `?${qs}` : ""}`);
     window.scrollTo({ top: 200, behavior: "smooth" });
   };
 
@@ -117,6 +126,7 @@ function CatalogContent() {
     setDebouncedSearch("");
     setSortBy("popular");
     setPage(1);
+    window.history.replaceState(null, "", "/products");
   };
 
   return (

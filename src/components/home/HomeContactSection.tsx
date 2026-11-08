@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { MessageCircle, ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import { siteConfig } from "@/data/siteConfig";
 
 function DiscordIcon({ className }: { className?: string }) {

@@ -378,3 +378,54 @@ export async function adminDeleteOrder(id: string) {
   const res = await apiClient.delete(`/admin/orders/${id}`);
   return res.data;
 }
+
+// ================= SALES & ACCOUNTING APIS =================
+
+export async function adminGetSalesStats(period: "day" | "week" | "month" | "all" = "day") {
+  const res = await apiClient.get("/admin/sales/stats", { params: { period } });
+  return res.data;
+}
+
+export async function adminGetSalesHistory(params?: {
+  period?: "day" | "week" | "month" | "all";
+  search?: string;
+  page?: number;
+  limit?: number;
+}) {
+  const res = await apiClient.get("/admin/sales/history", { params });
+  return res.data;
+}
+
+export async function adminQuickCounter(
+  productId: string,
+  tierId?: string,
+  action: "increment" | "decrement" = "increment"
+) {
+  const res = await apiClient.post("/admin/sales/quick-counter", {
+    productId,
+    tierId,
+    action,
+  });
+  return res.data;
+}
+
+export async function adminCreateManualSale(data: {
+  productName: string;
+  productId?: string;
+  tierName?: string;
+  tierId?: string;
+  sellingPriceDZD: number;
+  costPriceDZD?: number;
+  quantity?: number;
+  channel?: string;
+  notes?: string;
+  customDate?: string;
+}) {
+  const res = await apiClient.post("/admin/sales", data);
+  return res.data;
+}
+
+export async function adminDeleteSale(id: string) {
+  const res = await apiClient.delete(`/admin/sales/${id}`);
+  return res.data;
+}

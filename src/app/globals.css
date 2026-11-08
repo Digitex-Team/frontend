@@ -88,7 +88,11 @@ body {
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marquee 52s linear infinite;
+  animation: marquee 42s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
 }
 
 /* Radial tech gradients */

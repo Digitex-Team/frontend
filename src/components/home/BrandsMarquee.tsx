@@ -13,23 +13,23 @@ const partnerLogos = [
   { name: "Xbox", src: "/xbox.png", width: 90, height: 32 },
 ];
 
-// Two identical sets so translateX(-50%) creates a seamless, gap-free infinite loop
-const marqueeItems = [...partnerLogos, ...partnerLogos];
+// 4 identical sets so translateX(-50%) creates a seamless, gap-free infinite loop on any screen width
+const marqueeItems = [...partnerLogos, ...partnerLogos, ...partnerLogos, ...partnerLogos];
 
 export function BrandsMarquee() {
   return (
-    <section className="py-3 sm:py-4 relative overflow-hidden bg-transparent border-b border-white/[0.04]">
+    <section className="py-2.5 sm:py-3.5 relative overflow-hidden bg-transparent border-b border-white/[0.04]">
       {/* Sleek, proportional width wrapper */}
-      <div className="max-w-5xl mx-auto px-4 relative">
-        {/* Left Smooth Fade (No boxy backdrop-blur artifacts) */}
+      <div className="max-w-5xl mx-auto px-2 sm:px-4 relative">
+        {/* Left Smooth Fade */}
         <div
-          className="pointer-events-none absolute left-0 top-0 bottom-0 w-14 sm:w-24 z-10 bg-gradient-to-r from-[#05070C] via-[#05070C]/90 to-transparent"
+          className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-20 z-10 bg-gradient-to-r from-[#05070C] via-[#05070C]/90 to-transparent"
           aria-hidden="true"
         />
 
-        {/* Right Smooth Fade (No boxy backdrop-blur artifacts) */}
+        {/* Right Smooth Fade */}
         <div
-          className="pointer-events-none absolute right-0 top-0 bottom-0 w-14 sm:w-24 z-10 bg-gradient-to-l from-[#05070C] via-[#05070C]/90 to-transparent"
+          className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-20 z-10 bg-gradient-to-l from-[#05070C] via-[#05070C]/90 to-transparent"
           aria-hidden="true"
         />
 

@@ -10,7 +10,7 @@ interface ConfirmDeleteModalProps {
   onConfirm: () => void | Promise<void>;
   title?: string;
   itemName?: string;
-  itemType?: "produit" | "commande" | "catégorie" | "élément";
+  itemType?: "produit" | "commande" | "catégorie" | "élément" | "vente";
   description?: string;
   loading?: boolean;
 }

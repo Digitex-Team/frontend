@@ -65,6 +65,7 @@ export default function AdminProductsPage() {
   const [formFeatures, setFormFeatures] = useState("");
   const [formDeliveryTime, setFormDeliveryTime] = useState("5 - 15 minutes");
   const [formWarranty, setFormWarranty] = useState("Garantie officielle");
+  const [formCostPrice, setFormCostPrice] = useState<number>(0);
   const [formTiers, setFormTiers] = useState<
     Array<{ id?: string; durationName: string; priceDZD: number; accountType: string; isDefault: boolean; stockStatus: boolean }>
   >([
@@ -152,6 +153,7 @@ export default function AdminProductsPage() {
     setFormFeatures("Accès complet\nGarantie de remplacement");
     setFormDeliveryTime("5 - 15 minutes");
     setFormWarranty("Garantie officielle");
+    setFormCostPrice(0);
     setFormTiers([
       { durationName: "1 Mois", priceDZD: 2500, accountType: "Compte Privé", isDefault: true, stockStatus: true },
     ]);
@@ -173,6 +175,7 @@ export default function AdminProductsPage() {
     setFormFeatures((p.features || []).join("\n"));
     setFormDeliveryTime(p.deliveryTime || "5 - 15 minutes");
     setFormWarranty(p.warranty || "Garantie officielle");
+    setFormCostPrice(Number(p.costPriceDZD || 0));
     setFormTiers(
       (p.tiers || []).map((t: any) => ({
         id: t.id,
@@ -262,6 +265,7 @@ export default function AdminProductsPage() {
           description: formDescription || null,
           deliveryTime: formDeliveryTime.trim() || undefined,
           warranty: formWarranty.trim() || undefined,
+          costPriceDZD: Number(formCostPrice) || 0,
           brandColor: formBrandColor || "#00BFFF",
           image: formImage || "/chatgpt.png",
           isPopular: formIsPopular,
@@ -285,6 +289,7 @@ export default function AdminProductsPage() {
           description: formDescription || undefined,
           deliveryTime: formDeliveryTime.trim() || undefined,
           warranty: formWarranty.trim() || undefined,
+          costPriceDZD: Number(formCostPrice) || 0,
           brandColor: formBrandColor || "#00BFFF",
           image: formImage || "/chatgpt.png",
           isPopular: formIsPopular,
@@ -527,6 +532,12 @@ export default function AdminProductsPage() {
                           <span className="text-[10px] text-silver/40">
                             + {prod.tiers.length - 2} autre(s) formule(s)
                           </span>
+                        )}
+                        {Number(prod.costPriceDZD || 0) > 0 && (
+                          <div className="text-[10px] text-amber-300/80 font-mono flex items-center gap-1 pt-0.5">
+                            <span>Coût :</span>
+                            <span className="font-bold">{formatPrice(prod.costPriceDZD)} DZD</span>
+                          </div>
                         )}
                       </div>
                     </td>
@@ -772,7 +783,7 @@ export default function AdminProductsPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-silver/80 font-semibold mb-1">
                       Délai de Livraison
@@ -796,6 +807,20 @@ export default function AdminProductsPage() {
                       onChange={(e) => setFormWarranty(e.target.value)}
                       placeholder="ex: Garantie officielle"
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#0E1726] border border-white/10 focus:border-[#00BFFF] text-white text-xs outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-silver/80 font-semibold mb-1">
+                      Coût d&apos;Achat Fournisseur (DZD)
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={formCostPrice}
+                      onChange={(e) => setFormCostPrice(Number(e.target.value) || 0)}
+                      placeholder="ex: 1500"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0E1726] border border-white/10 focus:border-[#00BFFF] text-white text-xs outline-none font-mono"
                     />
                   </div>
                 </div>
