@@ -84,7 +84,11 @@ export function mapBackendProductToFrontend(raw: any): Product {
     isPopular: Boolean(raw.isPopular),
     plans: tiers,
     inStock: true,
-    deliveryTime: "5 - 15 minutes",
+    deliveryTime: raw.deliveryTime || "5 - 15 minutes",
+    warranty: raw.warranty || "Garantie officielle",
+    rating: raw.rating !== undefined ? Number(raw.rating) : 4.9,
+    reviewsCount: raw.reviewsCount !== undefined ? Number(raw.reviewsCount) : (raw.reviews?.length || 0),
+    reviews: raw.reviews || [],
   };
 }
 
@@ -218,12 +222,15 @@ export async function getLiveProductBySlug(slug: string): Promise<Product | null
 }
 
 export async function submitOrder(orderData: {
-  clientName: string;
-  whatsappPhone: string;
-  email?: string;
+  contactChannel: 'WHATSAPP' | 'INSTAGRAM';
+  contactValue: string;
   paymentMethod: string;
-  totalAmountDZD: number;
+  paymentProof?: string;
+  totalAmountDZD?: number;
   notes?: string;
+  clientName?: string;
+  whatsappPhone?: string;
+  email?: string;
   items: Array<{
     productId?: string;
     tierId?: string;
@@ -234,6 +241,18 @@ export async function submitOrder(orderData: {
   }>;
 }) {
   const res = await apiClient.post("/orders", orderData);
+  return res.data;
+}
+
+export async function submitProductReview(
+  slug: string,
+  reviewData: {
+    authorName: string;
+    rating: number;
+    comment: string;
+  }
+) {
+  const res = await apiClient.post(`/products/${encodeURIComponent(slug)}/reviews`, reviewData);
   return res.data;
 }
 

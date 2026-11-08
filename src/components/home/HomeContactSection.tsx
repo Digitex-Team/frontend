@@ -40,68 +40,42 @@ function TelegramIcon({ className }: { className?: string }) {
 }
 
 export function HomeContactSection() {
-  const whatsappSalesUrl = `https://wa.me/${(siteConfig.whatsappSalesNumber || siteConfig.whatsappNumber).replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-    "Bonjour Digitex, je souhaite passer une commande ou obtenir des informations commerciales."
-  )}`;
-
-  const whatsappSupportUrl = `https://wa.me/${(siteConfig.whatsappSupportNumber || "+213770987654").replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-    "Bonjour Digitex SAV, j'ai besoin d'une assistance technique pour mon abonnement."
-  )}`;
-
   const contactChannels = [
     {
-      id: "whatsapp-sales",
-      title: "WhatsApp Commercial",
-      subtitle: siteConfig.whatsappSalesDisplay || "+213 (0) 555 12 34 56",
-      badge: "Ventes & Commandes",
-      href: whatsappSalesUrl,
-      icon: <MessageCircle className="h-5 w-5 text-[#25D366]" />,
-      colorClass: "hover:border-[#25D366]/50",
-    },
-    {
-      id: "whatsapp-support",
-      title: "WhatsApp Support & SAV",
-      subtitle: siteConfig.whatsappSupportDisplay || "+213 (0) 770 98 76 54",
-      badge: "Assistance 7j/7",
-      href: whatsappSupportUrl,
-      icon: <MessageCircle className="h-5 w-5 text-[#00BFFF]" />,
-      colorClass: "hover:border-[#00BFFF]/50",
+      id: "instagram",
+      title: "Instagram Direct",
+      subtitle: "@digitex.web",
+      badge: "Commandes & DM",
+      href: siteConfig.instagramUrl || "https://www.instagram.com/digitex.web/",
+      icon: <InstagramIcon className="h-5 w-5 text-[#E1306C]" />,
+      colorClass: "hover:border-[#E1306C]/50 hover:shadow-[0_0_25px_rgba(225,48,108,0.25)]",
     },
     {
       id: "discord",
       title: "Communauté Discord",
-      subtitle: "Rejoindre le serveur",
-      badge: "Entraide & Annonces",
-      href: siteConfig.discordUrl || "https://discord.gg/digitex",
+      subtitle: "discord.gg/Z3ZnhfrXR5",
+      badge: "Tickets 24/7 & Entraide",
+      href: siteConfig.discordUrl || "https://discord.gg/Z3ZnhfrXR5",
       icon: <DiscordIcon className="h-5 w-5 text-[#5865F2]" />,
-      colorClass: "hover:border-[#5865F2]/50",
-    },
-    {
-      id: "instagram",
-      title: "Instagram Direct",
-      subtitle: "@digitex.store",
-      badge: "Nouveautés & DM",
-      href: siteConfig.instagramUrl || "https://instagram.com/digitex.store",
-      icon: <InstagramIcon className="h-5 w-5 text-[#E1306C]" />,
-      colorClass: "hover:border-[#E1306C]/50",
+      colorClass: "hover:border-[#5865F2]/50 hover:shadow-[0_0_25px_rgba(88,101,242,0.25)]",
     },
     {
       id: "facebook",
       title: "Facebook Messenger",
-      subtitle: "Digitex Store DZ",
+      subtitle: "Digitex Web",
       badge: "Page Officielle",
-      href: siteConfig.facebookUrl || "https://facebook.com/digitex.storedz",
+      href: siteConfig.facebookUrl || "https://www.facebook.com/digitex.web/",
       icon: <FacebookIcon className="h-5 w-5 text-[#1877F2]" />,
-      colorClass: "hover:border-[#1877F2]/50",
+      colorClass: "hover:border-[#1877F2]/50 hover:shadow-[0_0_25px_rgba(24,119,242,0.25)]",
     },
     {
       id: "telegram",
       title: "Canal Telegram",
-      subtitle: `@${siteConfig.telegramUsername || "digitex_dz"}`,
+      subtitle: `@${siteConfig.telegramUsername || "digitex_web"}`,
       badge: "Offres Flash",
-      href: `https://t.me/${siteConfig.telegramUsername || "digitex_dz"}`,
+      href: `https://t.me/${siteConfig.telegramUsername || "digitex_web"}`,
       icon: <TelegramIcon className="h-5 w-5 text-[#229ED9]" />,
-      colorClass: "hover:border-[#229ED9]/50",
+      colorClass: "hover:border-[#229ED9]/50 hover:shadow-[0_0_25px_rgba(34,158,217,0.25)]",
     },
   ];
 

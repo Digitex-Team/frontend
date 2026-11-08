@@ -61,7 +61,7 @@ export function Footer() {
         {/* 3. Right Column: Social Media Icons Only */}
         <div className="flex items-center gap-4 text-[#C8D5E5]/70">
           <a
-            href={siteConfig.discordUrl || "https://discord.gg/digitex"}
+            href={siteConfig.discordUrl || "https://discord.gg/Z3ZnhfrXR5"}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Discord"
@@ -70,7 +70,7 @@ export function Footer() {
             <DiscordIcon className="h-4 w-4" />
           </a>
           <a
-            href={siteConfig.instagramUrl || "https://instagram.com/digitex.store"}
+            href={siteConfig.instagramUrl || "https://www.instagram.com/digitex.web/"}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"
@@ -79,22 +79,13 @@ export function Footer() {
             <InstagramIcon className="h-4 w-4" />
           </a>
           <a
-            href={siteConfig.facebookUrl || "https://facebook.com/digitex.storedz"}
+            href={siteConfig.facebookUrl || "https://www.facebook.com/digitex.web/"}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Facebook"
             className="hover:text-[#00BFFF] transition-colors duration-200"
           >
             <FacebookIcon className="h-4 w-4" />
-          </a>
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="WhatsApp"
-            className="hover:text-[#00BFFF] transition-colors duration-200"
-          >
-            <MessageCircle className="h-4 w-4" />
           </a>
         </div>
       </div>

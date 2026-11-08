@@ -24,6 +24,7 @@ import { siteConfig } from "@/data/siteConfig";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/utils";
 import { OrderModal } from "@/components/products/OrderModal";
+import { ProductReviewsSection } from "@/components/products/ProductReviewsSection";
 import { getLiveProductBySlug } from "@/lib/api";
 
 // Vector Icons for Messengers (matching design system)
@@ -165,45 +166,35 @@ function ProductDetailLoadedView({ product }: { product: Product }) {
   };
 
   // Channel direct destination URLs
-  const cleanPhone = (siteConfig.whatsappSalesNumber || siteConfig.whatsappNumber).replace(/[^0-9]/g, "");
-  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(orderMessage)}`;
-  const instagramUrl = siteConfig.instagramUrl || "https://instagram.com/digitex.store";
-  const facebookUrl = siteConfig.facebookUrl || "https://facebook.com/digitex.storedz";
-  const discordUrl = siteConfig.discordUrl || "https://discord.gg/digitex";
+  const instagramUrl = siteConfig.instagramUrl || "https://www.instagram.com/digitex.web/";
+  const facebookUrl = siteConfig.facebookUrl || "https://www.facebook.com/digitex.web/";
+  const discordUrl = siteConfig.discordUrl || "https://discord.gg/Z3ZnhfrXR5";
 
   // Communication channels styled to perfectly match the site's dark cyber glassmorphism design system
   const communicationChannels = [
     {
-      id: "whatsapp",
-      name: "WhatsApp",
-      subtitle: "Réponse en 5-15 min",
-      badge: "Recommandé",
-      icon: <WhatsAppIcon className="h-5 w-5 text-[#25D366]" />,
-      href: whatsappUrl,
-    },
-    {
       id: "instagram",
       name: "Instagram",
-      subtitle: "@digitex.store",
-      badge: "DM Direct",
+      subtitle: "@digitex.web",
+      badge: "Recommandé • DM",
       icon: <InstagramIcon className="h-5 w-5 text-[#E1306C]" />,
       href: instagramUrl,
     },
     {
-      id: "facebook",
-      name: "Facebook",
-      subtitle: "Digitex Store DZ",
-      badge: "Messenger",
-      icon: <FacebookIcon className="h-5 w-5 text-[#1877F2]" />,
-      href: facebookUrl,
-    },
-    {
       id: "discord",
       name: "Discord",
-      subtitle: "Serveur officiel",
+      subtitle: "discord.gg/Z3ZnhfrXR5",
       badge: "Tickets 24/7",
       icon: <DiscordIcon className="h-5 w-5 text-[#5865F2]" />,
       href: discordUrl,
+    },
+    {
+      id: "facebook",
+      name: "Facebook",
+      subtitle: "Digitex Web",
+      badge: "Messenger",
+      icon: <FacebookIcon className="h-5 w-5 text-[#1877F2]" />,
+      href: facebookUrl,
     },
   ];
 
@@ -248,6 +239,13 @@ function ProductDetailLoadedView({ product }: { product: Product }) {
 
   const scrollToOrder = () => {
     orderSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  const scrollToReviews = () => {
+    const el = document.getElementById("reviews-section");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
   const description =
@@ -350,14 +348,19 @@ function ProductDetailLoadedView({ product }: { product: Product }) {
                 </p>
               )}
 
-              {/* Rating stars & review count */}
-              <div className="mt-4 flex items-center gap-1.5 text-xs text-amber-400 font-bold bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full">
+              {/* Rating stars & review count (Clickable to scroll to reviews) */}
+              <button
+                type="button"
+                onClick={scrollToReviews}
+                className="mt-4 flex items-center gap-1.5 text-xs text-amber-400 font-bold bg-amber-400/10 hover:bg-amber-400/15 border border-amber-400/20 hover:border-amber-400/40 px-3.5 py-1 rounded-full transition cursor-pointer active:scale-95 shadow-[0_0_15px_rgba(251,191,36,0.15)]"
+                title="Consulter les avis clients réels"
+              >
                 <Star className="h-3.5 w-3.5 fill-current" />
                 <span>{product.rating ? `${product.rating} / 5` : "4.9 / 5"}</span>
-                <span className="text-silver/50 font-normal">
-                  ({product.reviewsCount || 180} avis clients DZ)
+                <span className="text-silver/60 font-normal">
+                  ({product.reviewsCount !== undefined ? `${product.reviewsCount} avis clients DZ` : "Avis clients DZ"})
                 </span>
-              </div>
+              </button>
 
               {/* Delivery & Warranty Badges */}
               <div className="mt-5 flex flex-wrap justify-center gap-2 sm:gap-2.5">
@@ -636,6 +639,15 @@ function ProductDetailLoadedView({ product }: { product: Product }) {
         </motion.div>
       </div>
 
+      {/* Real Reviews Section ("Avis Clients") with direct submission */}
+      <ProductReviewsSection
+        productSlug={product.slug}
+        productName={product.name}
+        initialReviews={product.reviews || []}
+        initialRating={product.rating || 4.9}
+        initialReviewsCount={product.reviewsCount || (product.reviews?.length || 0)}
+      />
+
       {/* =========================================================================
           MOBILE STICKY BOTTOM ACTION BAR (Smart Phone UX - 1 tap to contact)
           ========================================================================= */}
@@ -661,14 +673,14 @@ function ProductDetailLoadedView({ product }: { product: Product }) {
           </button>
 
           <a
-            href={whatsappUrl}
+            href={instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2.5 rounded-xl glass-button-secondary text-emerald-400 hover:text-emerald-300 border border-white/10 active:scale-95"
-            aria-label="Commander via WhatsApp"
-            title="Commander via WhatsApp"
+            className="p-2.5 rounded-xl glass-button-secondary text-pink-400 hover:text-pink-300 border border-white/10 active:scale-95"
+            aria-label="Commander via Instagram"
+            title="Commander via Instagram"
           >
-            <WhatsAppIcon className="h-4 w-4" />
+            <InstagramIcon className="h-4 w-4" />
           </a>
         </div>
       </div>

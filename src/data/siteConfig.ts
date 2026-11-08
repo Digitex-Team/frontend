@@ -10,51 +10,89 @@ export const siteConfig: SiteConfig = {
   whatsappSalesDisplay: "+213 (0) 555 12 34 56",
   whatsappSupportNumber: "+213770987654",
   whatsappSupportDisplay: "+213 (0) 770 98 76 54",
-  telegramUsername: "digitex_dz",
-  discordUrl: "https://discord.gg/digitex",
-  instagramUrl: "https://instagram.com/digitex.store",
-  facebookUrl: "https://facebook.com/digitex.storedz",
+  telegramUsername: "digitex_web",
+  discordUrl: "https://discord.gg/Z3ZnhfrXR5",
+  instagramUrl: "https://www.instagram.com/digitex.web/",
+  facebookUrl: "https://www.facebook.com/digitex.web/",
+  isWhatsappEnabled: false,
   email: "contact@digitex.store",
   phone: "+213 (0) 555 12 34 56",
   location: "Alger, Algérie • Livraison Digitale Immédiate",
   workingHours: "7j/7 • 09:00 - 00:00 (Support 24/7 pour urgences)",
-  baridimobRIP: "007 99999 0012345678 90",
-  ccpAccount: "12345678 Clé 90",
-  binancePayId: "987654321",
+  baridimobRIP: "00799999004278633637",
+  ccpAccount: "0042786336 Clé 37",
+  binancePayId: "743353266",
+  redotPayId: "1601619871",
+  flexyNumber: "0555 12 34 56",
 };
 
-export const paymentMethodsList = [
+export interface PaymentInfoDetail {
+  id: string;
+  name: string;
+  badge?: string;
+  iconName: string;
+  accountLabel: string;
+  accountValue: string;
+  holderName?: string;
+  instructions: string;
+  color: string;
+}
+
+export const paymentMethodsList: PaymentInfoDetail[] = [
   {
     id: "baridimob",
     name: "BaridiMob",
-    description: "Virement instantané 24/7 sans frais",
-    popular: true,
-    badge: "Le plus rapide",
+    badge: "Recommandé • Instantané",
     iconName: "Smartphone",
+    accountLabel: "RIP BaridiMob (20 chiffres)",
+    accountValue: "00799999004278633637",
+    holderName: "Digitex Store DZ",
+    instructions: "Effectuez le virement vers ce RIP via l'application BaridiMob, puis téléversez la capture d'écran du reçu ci-dessous.",
+    color: "#059669",
   },
   {
     id: "ccp",
-    name: "CCP / Poste Algérienne",
-    description: "Versement au bureau de poste ou mandat",
-    popular: false,
+    name: "CCP / Poste",
     badge: "Classique",
     iconName: "Building2",
+    accountLabel: "Numéro de Compte CCP & Clé",
+    accountValue: "0042786336 Clé 37",
+    holderName: "Digitex Store DZ",
+    instructions: "Versement au bureau de poste ou mandat (Compte: 0042786336, Clé: 37). Téléversez une photo claire du reçu de versement ci-dessous.",
+    color: "#eab308",
   },
   {
     id: "binance",
-    name: "Binance Pay / Crypto (USDT)",
-    description: "Paiement international crypto sans frais",
-    popular: false,
-    badge: "USDT / Crypto",
+    name: "Binance Pay",
+    badge: "Crypto USDT",
     iconName: "Coins",
+    accountLabel: "Binance Pay ID (USDT)",
+    accountValue: "743353266",
+    holderName: "Digitex Pay (USDT)",
+    instructions: "Envoyez le montant équivalent en USDT (taux du jour) via Binance Pay vers ce Pay ID, puis téléversez la capture de confirmation.",
+    color: "#f59e0b",
   },
   {
-    id: "hand",
-    name: "Paiement en Main Propre",
-    description: "Disponible à Alger centre sur rendez-vous",
-    popular: false,
-    badge: "Alger",
-    iconName: "Handshake",
+    id: "redotpay",
+    name: "RedotPay",
+    badge: "Sans frais",
+    iconName: "CreditCard",
+    accountLabel: "RedotPay UID",
+    accountValue: "1601619871",
+    holderName: "Digitex RedotPay",
+    instructions: "Transfert interne RedotPay instantané sans frais vers cet UID. Téléversez la capture de la transaction.",
+    color: "#ef4444",
+  },
+  {
+    id: "flexy",
+    name: "Flexy",
+    badge: "+20% frais",
+    iconName: "PhoneCall",
+    accountLabel: "Numéro Flexy (Mobilis / Djezzy / Ooredoo)",
+    accountValue: "0555 12 34 56",
+    holderName: "Digitex Flexy DZ",
+    instructions: "Envoyez le flexy vers ce numéro avec +20% de frais opérateur. Téléversez la capture du SMS de confirmation.",
+    color: "#06b6d4",
   },
 ];
 

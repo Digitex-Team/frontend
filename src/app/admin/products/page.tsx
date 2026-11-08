@@ -63,6 +63,8 @@ export default function AdminProductsPage() {
   const [formIsPopular, setFormIsPopular] = useState(false);
   const [formIsActive, setFormIsActive] = useState(true);
   const [formFeatures, setFormFeatures] = useState("");
+  const [formDeliveryTime, setFormDeliveryTime] = useState("5 - 15 minutes");
+  const [formWarranty, setFormWarranty] = useState("Garantie officielle");
   const [formTiers, setFormTiers] = useState<
     Array<{ id?: string; durationName: string; priceDZD: number; accountType: string; isDefault: boolean; stockStatus: boolean }>
   >([
@@ -148,6 +150,8 @@ export default function AdminProductsPage() {
     setFormIsPopular(false);
     setFormIsActive(true);
     setFormFeatures("Accès complet\nGarantie de remplacement");
+    setFormDeliveryTime("5 - 15 minutes");
+    setFormWarranty("Garantie officielle");
     setFormTiers([
       { durationName: "1 Mois", priceDZD: 2500, accountType: "Compte Privé", isDefault: true, stockStatus: true },
     ]);
@@ -167,6 +171,8 @@ export default function AdminProductsPage() {
     setFormIsPopular(Boolean(p.isPopular));
     setFormIsActive(Boolean(p.isActive));
     setFormFeatures((p.features || []).join("\n"));
+    setFormDeliveryTime(p.deliveryTime || "5 - 15 minutes");
+    setFormWarranty(p.warranty || "Garantie officielle");
     setFormTiers(
       (p.tiers || []).map((t: any) => ({
         id: t.id,
@@ -254,6 +260,8 @@ export default function AdminProductsPage() {
           categoryId: formCategoryId || null,
           subtitle: formSubtitle || null,
           description: formDescription || null,
+          deliveryTime: formDeliveryTime.trim() || undefined,
+          warranty: formWarranty.trim() || undefined,
           brandColor: formBrandColor || "#00BFFF",
           image: formImage || "/chatgpt.png",
           isPopular: formIsPopular,
@@ -275,6 +283,8 @@ export default function AdminProductsPage() {
           categoryId: formCategoryId || undefined,
           subtitle: formSubtitle || undefined,
           description: formDescription || undefined,
+          deliveryTime: formDeliveryTime.trim() || undefined,
+          warranty: formWarranty.trim() || undefined,
           brandColor: formBrandColor || "#00BFFF",
           image: formImage || "/chatgpt.png",
           isPopular: formIsPopular,
@@ -760,6 +770,34 @@ export default function AdminProductsPage() {
                     placeholder="Accès complet&#10;Derniers modèles&#10;Garantie 30 jours"
                     className="w-full px-3.5 py-2 rounded-xl bg-[#0E1726] border border-white/10 focus:border-[#00BFFF] text-white text-xs outline-none resize-none"
                   />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-silver/80 font-semibold mb-1">
+                      Délai de Livraison
+                    </label>
+                    <input
+                      type="text"
+                      value={formDeliveryTime}
+                      onChange={(e) => setFormDeliveryTime(e.target.value)}
+                      placeholder="ex: 5 - 15 minutes"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0E1726] border border-white/10 focus:border-[#00BFFF] text-white text-xs outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-silver/80 font-semibold mb-1">
+                      Garantie
+                    </label>
+                    <input
+                      type="text"
+                      value={formWarranty}
+                      onChange={(e) => setFormWarranty(e.target.value)}
+                      placeholder="ex: Garantie officielle"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0E1726] border border-white/10 focus:border-[#00BFFF] text-white text-xs outline-none"
+                    />
+                  </div>
                 </div>
 
                 {/* Formules et Tarifs */}

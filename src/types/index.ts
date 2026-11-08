@@ -16,6 +16,16 @@ export interface ProductFaq {
   answer: string;
 }
 
+export interface Review {
+  id: string;
+  productId: string;
+  authorName: string;
+  rating: number;
+  comment: string;
+  isApproved: boolean;
+  createdAt: string;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -42,19 +52,22 @@ export interface Product {
   reviewsCount?: number;
   deliveryTime?: string; // e.g. "5 - 15 minutes"
   inStock?: boolean;
-  warranty?: string; // e.g. "Garantie complète 30 jours"
+  warranty?: string; // e.g. "Garantie officielle"
   plans?: SubscriptionTier[];
   activationSteps?: string[];
   faq?: ProductFaq[];
+  reviews?: Review[];
 }
 
-export type PaymentMethod = 'baridimob' | 'ccp' | 'binance' | 'hand';
+export type PaymentMethod = 'baridimob' | 'ccp' | 'binance' | 'redotpay' | 'flexy';
+
+export type ContactChannel = 'WHATSAPP' | 'INSTAGRAM';
 
 export interface OrderFormData {
-  customerName: string;
-  whatsapp: string;
-  email: string;
-  paymentMethod: PaymentMethod;
+  contactChannel: ContactChannel;
+  contactValue: string;
+  paymentMethod: PaymentMethod | string;
+  paymentProof?: string;
   notes?: string;
 }
 
@@ -84,8 +97,11 @@ export interface SiteConfig {
   phone: string;
   location: string;
   workingHours: string;
+  isWhatsappEnabled?: boolean;
   baridimobRIP: string;
   ccpAccount: string;
   binancePayId: string;
+  redotPayId: string;
+  flexyNumber: string;
 }
 

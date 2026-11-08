@@ -20,7 +20,7 @@ export function HowItWorks() {
       pillTag: "Devis clair & transparent",
       title: "2. Choisissez votre messagerie",
       description:
-        "Cliquez sur 'Commander' et sélectionnez votre canal préféré (WhatsApp, Instagram, Facebook, Discord, Telegram). Votre commande est pré-remplie.",
+        "Cliquez sur 'Commander' et transmettez votre demande sur Instagram, Discord ou Facebook. Votre commande est traitée immédiatement.",
       icon: <MessageCircle className="h-6 w-6 text-[#075BDB]" />,
       status: "Redirection en 1 clic",
     },
