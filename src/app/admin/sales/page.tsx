@@ -57,6 +57,7 @@ export default function AdminSalesAccountingPage() {
 
   // Quick Counter animation state
   const [pulsingProductId, setPulsingProductId] = useState<string | null>(null);
+  const [selectedTierByProduct, setSelectedTierByProduct] = useState<Record<string, string>>({});
 
   // Manual Sale Modal
   const [manualModalOpen, setManualModalOpen] = useState(false);
@@ -155,8 +156,10 @@ export default function AdminSalesAccountingPage() {
       if (defaultTier) {
         setFormTierName(defaultTier.durationName);
         setFormSellingPrice(Number(defaultTier.priceDZD));
+        setFormCostPrice(Number(defaultTier.costPriceDZD ?? prod.costPriceDZD ?? 0));
+      } else {
+        setFormCostPrice(Number(prod.costPriceDZD || 0));
       }
-      setFormCostPrice(Number(prod.costPriceDZD || 0));
     }
   };
 
@@ -503,7 +506,17 @@ export default function AdminSalesAccountingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
           {filteredProductCounters.map((prod: any) => {
             const isPulsing = pulsingProductId === prod.id;
-            const unitProfit = prod.sellingPriceDZD - prod.costPriceDZD;
+            const currentTierId = selectedTierByProduct[prod.id] || prod.tierId;
+            const activeTier = prod.tiers?.find((t: any) => t.id === currentTierId) || prod.tiers?.[0] || {
+              id: prod.tierId,
+              durationName: prod.tierName,
+              priceDZD: prod.sellingPriceDZD,
+              costPriceDZD: prod.costPriceDZD,
+            };
+
+            const sellingPrice = Number(activeTier.priceDZD ?? prod.sellingPriceDZD ?? 0);
+            const costPrice = Number(activeTier.costPriceDZD ?? prod.costPriceDZD ?? 0);
+            const unitProfit = sellingPrice - costPrice;
 
             return (
               <motion.div
@@ -533,9 +546,28 @@ export default function AdminSalesAccountingPage() {
 
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-white text-xs truncate">{prod.name}</p>
-                      <span className="text-[10px] text-cyan font-semibold block truncate">
-                        {prod.tierName} &bull; {formatPrice(prod.sellingPriceDZD)} DZD
-                      </span>
+                      {prod.tiers && prod.tiers.length > 1 ? (
+                        <select
+                          value={activeTier.id}
+                          onChange={(e) => {
+                            setSelectedTierByProduct({
+                              ...selectedTierByProduct,
+                              [prod.id]: e.target.value,
+                            });
+                          }}
+                          className="mt-0.5 bg-[#090F1B] border border-cyan/40 text-cyan text-[10px] font-semibold rounded-md px-1.5 py-0.5 outline-none max-w-full truncate cursor-pointer"
+                        >
+                          {prod.tiers.map((t: any) => (
+                            <option key={t.id} value={t.id}>
+                              {t.durationName} &bull; {formatPrice(t.priceDZD)} DZD
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span className="text-[10px] text-cyan font-semibold block truncate">
+                          {activeTier.durationName || prod.tierName} &bull; {formatPrice(sellingPrice)} DZD
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -543,7 +575,7 @@ export default function AdminSalesAccountingPage() {
                   <div className="mt-3 p-2 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between text-[11px]">
                     <div>
                       <span className="text-silver/50 block text-[9px] uppercase">Achat</span>
-                      <span className="text-rose-300 font-semibold">{formatPrice(prod.costPriceDZD)} DZD</span>
+                      <span className="text-rose-300 font-semibold">{formatPrice(costPrice)} DZD</span>
                     </div>
                     <div className="text-right">
                       <span className="text-silver/50 block text-[9px] uppercase">Bénéfice/u</span>
@@ -567,7 +599,7 @@ export default function AdminSalesAccountingPage() {
                   {/* Big +1 Vente button */}
                   <button
                     type="button"
-                    onClick={() => handleCounterClick(prod.id, prod.tierId, "increment")}
+                    onClick={() => handleCounterClick(prod.id, activeTier.id, "increment")}
                     className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-[#075BDB] to-[#00BFFF] hover:from-[#064ec0] hover:to-[#00a6dd] text-white text-xs font-bold shadow-[0_0_15px_rgba(0,191,255,0.3)] flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
@@ -578,7 +610,7 @@ export default function AdminSalesAccountingPage() {
                   <button
                     type="button"
                     disabled={prod.soldToday <= 0}
-                    onClick={() => handleCounterClick(prod.id, prod.tierId, "decrement")}
+                    onClick={() => handleCounterClick(prod.id, activeTier.id, "decrement")}
                     title="Annuler 1 vente aujourd'hui"
                     className="p-2 rounded-xl bg-white/5 hover:bg-rose-500/15 hover:text-rose-400 border border-white/10 text-silver/60 transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                   >
@@ -588,7 +620,13 @@ export default function AdminSalesAccountingPage() {
                   {/* Custom sale button */}
                   <button
                     type="button"
-                    onClick={() => openCustomSaleForProduct(prod)}
+                    onClick={() => openCustomSaleForProduct({
+                      ...prod,
+                      tierId: activeTier.id,
+                      tierName: activeTier.durationName || prod.tierName,
+                      sellingPriceDZD: sellingPrice,
+                      costPriceDZD: costPrice,
+                    })}
                     title="Personnaliser prix / coût d'achat"
                     className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-silver/70 hover:text-white transition cursor-pointer"
                   >
@@ -890,6 +928,38 @@ export default function AdminSalesAccountingPage() {
                     <label className="block text-silver/90 font-semibold mb-1">
                       Formule / Durée
                     </label>
+                    {/* Quick sync buttons for product tiers */}
+                    {(() => {
+                      const selProd = productsList.find((p) => p.id === formProductId);
+                      if (selProd?.tiers && selProd.tiers.length > 0) {
+                        return (
+                          <div className="mb-2 flex flex-wrap gap-1.5">
+                            {selProd.tiers.map((t: any) => {
+                              const isSelected = formTierName === t.durationName;
+                              return (
+                                <button
+                                  key={t.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setFormTierName(t.durationName);
+                                    setFormSellingPrice(Number(t.priceDZD));
+                                    setFormCostPrice(Number(t.costPriceDZD || 0));
+                                  }}
+                                  className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold transition border cursor-pointer ${
+                                    isSelected
+                                      ? "bg-cyan/20 border-cyan text-cyan shadow-sm"
+                                      : "bg-white/5 border-white/10 text-silver/70 hover:text-white hover:bg-white/10"
+                                  }`}
+                                >
+                                  {t.durationName}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                     <input
                       type="text"
                       value={formTierName}

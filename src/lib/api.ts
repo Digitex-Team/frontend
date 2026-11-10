@@ -344,6 +344,11 @@ export async function adminDeleteProduct(id: string) {
   return res.data;
 }
 
+export async function adminDeleteProductTier(tierId: string) {
+  const res = await apiClient.delete(`/admin/products/tiers/${tierId}`);
+  return res.data;
+}
+
 // Orders Management
 export async function adminGetOrders(
   status?: string,

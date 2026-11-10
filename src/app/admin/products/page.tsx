@@ -26,6 +26,7 @@ import {
   adminCreateProduct,
   adminUpdateProduct,
   adminDeleteProduct,
+  adminDeleteProductTier,
   adminGetCategories,
   DbCategory,
 } from "@/lib/api";
@@ -51,6 +52,8 @@ export default function AdminProductsPage() {
   // High-End Hard Delete Modal State
   const [productToDelete, setProductToDelete] = useState<{ id: string; name: string } | null>(null);
   const [deletingProduct, setDeletingProduct] = useState(false);
+  const [tierToDelete, setTierToDelete] = useState<{ id?: string; index: number; name: string } | null>(null);
+  const [deletingTier, setDeletingTier] = useState(false);
 
   // Form State
   const [formName, setFormName] = useState("");
@@ -67,9 +70,17 @@ export default function AdminProductsPage() {
   const [formWarranty, setFormWarranty] = useState("Garantie officielle");
   const [formCostPrice, setFormCostPrice] = useState<number>(0);
   const [formTiers, setFormTiers] = useState<
-    Array<{ id?: string; durationName: string; priceDZD: number; accountType: string; isDefault: boolean; stockStatus: boolean }>
+    Array<{
+      id?: string;
+      durationName: string;
+      priceDZD: number;
+      costPriceDZD: number;
+      accountType: string;
+      isDefault: boolean;
+      stockStatus: boolean;
+    }>
   >([
-    { durationName: "1 Mois", priceDZD: 2500, accountType: "Compte Privé", isDefault: true, stockStatus: true },
+    { durationName: "1 Mois", priceDZD: 2500, costPriceDZD: 1000, accountType: "Compte Privé", isDefault: true, stockStatus: true },
   ]);
 
   const [saving, setSaving] = useState(false);
@@ -155,7 +166,7 @@ export default function AdminProductsPage() {
     setFormWarranty("Garantie officielle");
     setFormCostPrice(0);
     setFormTiers([
-      { durationName: "1 Mois", priceDZD: 2500, accountType: "Compte Privé", isDefault: true, stockStatus: true },
+      { durationName: "1 Mois", priceDZD: 2500, costPriceDZD: 1000, accountType: "Compte Privé", isDefault: true, stockStatus: true },
     ]);
     setFormError(null);
     setModalOpen(true);
@@ -181,6 +192,7 @@ export default function AdminProductsPage() {
         id: t.id,
         durationName: t.durationName,
         priceDZD: Number(t.priceDZD),
+        costPriceDZD: Number(t.costPriceDZD !== undefined && Number(t.costPriceDZD) > 0 ? t.costPriceDZD : (p.costPriceDZD || 0)),
         accountType: t.accountType || "Compte Privé",
         isDefault: Boolean(t.isDefault),
         stockStatus: Boolean(t.stockStatus),
@@ -267,7 +279,7 @@ export default function AdminProductsPage() {
           warranty: formWarranty.trim() || undefined,
           costPriceDZD: Number(formCostPrice) || 0,
           brandColor: formBrandColor || "#00BFFF",
-          image: formImage || "/chatgpt.png",
+          image: formImage || "/logo.png",
           isPopular: formIsPopular,
           isActive: formIsActive,
           features: featuresArray,
@@ -275,6 +287,7 @@ export default function AdminProductsPage() {
             id: t.id,
             durationName: t.durationName,
             priceDZD: Number(t.priceDZD),
+            costPriceDZD: Number(t.costPriceDZD) || 0,
             accountType: t.accountType,
             isDefault: t.isDefault,
             stockStatus: t.stockStatus,
@@ -289,15 +302,16 @@ export default function AdminProductsPage() {
           description: formDescription || undefined,
           deliveryTime: formDeliveryTime.trim() || undefined,
           warranty: formWarranty.trim() || undefined,
-          costPriceDZD: Number(formCostPrice) || 0,
+          costPriceDZD: Number(formCostPrice) || (formTiers[0]?.costPriceDZD ? Number(formTiers[0].costPriceDZD) : 0),
           brandColor: formBrandColor || "#00BFFF",
-          image: formImage || "/chatgpt.png",
+          image: formImage || "/logo.png",
           isPopular: formIsPopular,
           isActive: formIsActive,
           features: featuresArray,
           tiers: formTiers.map((t) => ({
             durationName: t.durationName,
             priceDZD: Number(t.priceDZD),
+            costPriceDZD: Number(t.costPriceDZD) || 0,
             accountType: t.accountType,
             isDefault: t.isDefault,
             stockStatus: t.stockStatus,
@@ -332,16 +346,48 @@ export default function AdminProductsPage() {
   const addTier = () => {
     setFormTiers([
       ...formTiers,
-      { durationName: "3 Mois", priceDZD: 5000, accountType: "Compte Privé", isDefault: false, stockStatus: true },
+      { durationName: "3 Mois", priceDZD: 5000, costPriceDZD: 2000, accountType: "Compte Privé", isDefault: false, stockStatus: true },
     ]);
   };
 
-  const removeTier = (index: number) => {
+  const requestDeleteTier = (index: number) => {
     if (formTiers.length <= 1) {
-      alert("Un produit doit avoir au moins une formule tarifaire.");
+      alert("Un produit doit conserver au moins une formule tarifaire.");
       return;
     }
-    setFormTiers(formTiers.filter((_, i) => i !== index));
+    const tier = formTiers[index];
+    if (tier.id) {
+      setTierToDelete({ id: tier.id, index, name: tier.durationName });
+    } else {
+      const updated = formTiers.filter((_, i) => i !== index);
+      if (tier.isDefault && updated.length > 0) {
+        updated[0].isDefault = true;
+      }
+      setFormTiers(updated);
+    }
+  };
+
+  const confirmDeleteTier = async () => {
+    if (!tierToDelete) return;
+    setDeletingTier(true);
+    try {
+      if (tierToDelete.id) {
+        await adminDeleteProductTier(tierToDelete.id);
+      }
+      const updated = formTiers.filter((_, i) => i !== tierToDelete.index);
+      const wasDefault = formTiers[tierToDelete.index]?.isDefault;
+      if (wasDefault && updated.length > 0) {
+        updated[0].isDefault = true;
+      }
+      setFormTiers(updated);
+      setTierToDelete(null);
+      // Refresh products list in background immediately
+      fetchProductsList(page, search, selectedCategory);
+    } catch (err: any) {
+      alert("Erreur lors de la suppression de la formule : " + (err.response?.data?.message || err.message));
+    } finally {
+      setDeletingTier(false);
+    }
   };
 
   const updateTierField = (index: number, field: string, value: any) => {
@@ -470,15 +516,16 @@ export default function AdminProductsPage() {
                   <tr key={prod.id} className="hover:bg-white/[0.02] transition">
                     <td className="py-3.5 px-4 sm:px-6">
                       <div className="flex items-center gap-3">
-                        <div
-                          className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs shrink-0"
-                          style={{
-                            backgroundColor: `${prod.brandColor || "#00BFFF"}20`,
-                            border: `1px solid ${prod.brandColor || "#00BFFF"}50`,
-                            color: prod.brandColor || "#00BFFF",
-                          }}
-                        >
-                          {prod.name.slice(0, 2).toUpperCase()}
+                        <div className="w-10 h-10 rounded-xl bg-[#090F1B] border border-white/10 flex items-center justify-center shrink-0 overflow-hidden relative p-1.5 shadow-sm">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={prod.image && prod.image.trim() ? prod.image : "/logo.png"}
+                            alt={prod.name}
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src = "/logo.png";
+                            }}
+                          />
                         </div>
                         <div>
                           <p className="font-bold text-white text-sm">{prod.name}</p>
@@ -522,22 +569,28 @@ export default function AdminProductsPage() {
 
                     <td className="py-3.5 px-4">
                       <div className="space-y-1">
-                        {(prod.tiers || []).slice(0, 2).map((t: any) => (
-                          <div key={t.id} className="text-[11px] text-silver/80 flex items-center gap-1">
-                            <span className="font-semibold text-white">{t.durationName} :</span>
-                            <span className="text-cyan font-bold">{formatPrice(t.priceDZD)} DZD</span>
-                          </div>
-                        ))}
-                        {(prod.tiers || []).length > 2 && (
+                        {(prod.tiers || []).slice(0, 3).map((t: any) => {
+                          const tierCost = Number(
+                            t.costPriceDZD !== undefined && Number(t.costPriceDZD) > 0
+                              ? t.costPriceDZD
+                              : prod.costPriceDZD || 0
+                          );
+                          return (
+                            <div key={t.id} className="text-[11px] text-silver/80 flex flex-wrap items-center gap-1.5">
+                              <span className="font-semibold text-white">{t.durationName} :</span>
+                              <span className="text-cyan font-bold">{formatPrice(t.priceDZD)} DZD</span>
+                              {tierCost > 0 && (
+                                <span className="text-[10px] text-rose-300/80 font-mono">
+                                  (Coût: {formatPrice(tierCost)} DZD)
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                        {(prod.tiers || []).length > 3 && (
                           <span className="text-[10px] text-silver/40">
-                            + {prod.tiers.length - 2} autre(s) formule(s)
+                            + {prod.tiers.length - 3} autre(s) formule(s)
                           </span>
-                        )}
-                        {Number(prod.costPriceDZD || 0) > 0 && (
-                          <div className="text-[10px] text-amber-300/80 font-mono flex items-center gap-1 pt-0.5">
-                            <span>Coût :</span>
-                            <span className="font-bold">{formatPrice(prod.costPriceDZD)} DZD</span>
-                          </div>
                         )}
                       </div>
                     </td>
@@ -842,31 +895,70 @@ export default function AdminProductsPage() {
                   </div>
 
                   <div className="space-y-2">
+                    {/* Header labels for tiers */}
+                    <div className="hidden sm:grid grid-cols-12 gap-2 px-3 text-[10px] font-bold text-silver/50 uppercase tracking-wider">
+                      <div className="col-span-3">Durée</div>
+                      <div className="col-span-2 text-cyan">Prix Vente (DZD)</div>
+                      <div className="col-span-2 text-rose-400">Coût Fournisseur (DZD)</div>
+                      <div className="col-span-3">Type Compte</div>
+                      <div className="col-span-1 text-center">Défaut</div>
+                      <div className="col-span-1 text-right">Suppr.</div>
+                    </div>
+
                     {formTiers.map((tier, idx) => (
                       <div
                         key={idx}
-                        className="p-3 rounded-xl bg-white/[0.02] border border-white/10 flex flex-wrap items-center gap-2 text-xs"
+                        className="p-3 rounded-xl bg-white/[0.02] border border-white/10 grid grid-cols-1 sm:grid-cols-12 gap-2 items-center text-xs"
                       >
-                        <input
-                          type="text"
-                          required
-                          value={tier.durationName}
-                          onChange={(e) => updateTierField(idx, "durationName", e.target.value)}
-                          placeholder="Durée (ex: 1 Mois)"
-                          className="flex-1 min-w-[110px] px-2.5 py-1.5 rounded-lg bg-[#0E1726] border border-white/10 text-white text-xs outline-none"
-                        />
-                        <div className="flex items-center gap-1 w-28">
+                        {/* Durée */}
+                        <div className="sm:col-span-3">
+                          <label className="sm:hidden block text-[10px] text-silver/60 mb-1">Durée :</label>
                           <input
-                            type="number"
+                            type="text"
                             required
-                            min={0}
-                            value={tier.priceDZD}
-                            onChange={(e) => updateTierField(idx, "priceDZD", Number(e.target.value))}
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-[#0E1726] border border-white/10 text-cyan font-bold text-xs outline-none"
+                            value={tier.durationName}
+                            onChange={(e) => updateTierField(idx, "durationName", e.target.value)}
+                            placeholder="Durée (ex: 1 Mois)"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-[#0E1726] border border-white/10 text-white text-xs outline-none focus:border-cyan"
                           />
-                          <span className="text-[10px] text-silver/60">DZD</span>
                         </div>
-                        <div className="w-40">
+
+                        {/* Prix Vente */}
+                        <div className="sm:col-span-2">
+                          <label className="sm:hidden block text-[10px] text-cyan mb-1">Prix Vente (DZD) :</label>
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="number"
+                              required
+                              min={0}
+                              value={tier.priceDZD}
+                              onChange={(e) => updateTierField(idx, "priceDZD", Number(e.target.value))}
+                              placeholder="Vente"
+                              className="w-full px-2.5 py-1.5 rounded-lg bg-[#0E1726] border border-cyan/40 text-cyan font-bold text-xs outline-none focus:border-cyan"
+                            />
+                            <span className="text-[10px] text-silver/60 sm:hidden">DZD</span>
+                          </div>
+                        </div>
+
+                        {/* Coût Fournisseur */}
+                        <div className="sm:col-span-2">
+                          <label className="sm:hidden block text-[10px] text-rose-400 mb-1">Coût Achat (DZD) :</label>
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="number"
+                              min={0}
+                              value={tier.costPriceDZD}
+                              onChange={(e) => updateTierField(idx, "costPriceDZD", Number(e.target.value))}
+                              placeholder="Coût"
+                              className="w-full px-2.5 py-1.5 rounded-lg bg-[#0E1726] border border-rose-500/40 text-rose-300 font-bold text-xs outline-none focus:border-rose-400 font-mono"
+                            />
+                            <span className="text-[10px] text-silver/60 sm:hidden">DZD</span>
+                          </div>
+                        </div>
+
+                        {/* Type Compte */}
+                        <div className="sm:col-span-3">
+                          <label className="sm:hidden block text-[10px] text-silver/60 mb-1">Type :</label>
                           <CustomSelect
                             value={tier.accountType}
                             onChange={(val) => updateTierField(idx, "accountType", val)}
@@ -878,18 +970,28 @@ export default function AdminProductsPage() {
                             ]}
                           />
                         </div>
-                        <CustomCheckbox
-                          checked={tier.isDefault}
-                          onChange={(checked) => updateTierField(idx, "isDefault", checked)}
-                          label="Défaut"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeTier(idx)}
-                          className="p-1 text-rose-400 hover:text-rose-300 ml-auto cursor-pointer"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+
+                        {/* Défaut */}
+                        <div className="sm:col-span-1 flex items-center justify-start sm:justify-center">
+                          <CustomCheckbox
+                            checked={tier.isDefault}
+                            onChange={(checked) => updateTierField(idx, "isDefault", checked)}
+                            label=""
+                          />
+                          <span className="sm:hidden text-xs text-silver/70 ml-2">Par défaut</span>
+                        </div>
+
+                        {/* Supprimer button */}
+                        <div className="sm:col-span-1 flex items-center justify-end">
+                          <button
+                            type="button"
+                            onClick={() => requestDeleteTier(idx)}
+                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 transition cursor-pointer"
+                            title="Supprimer définitivement cette formule"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -934,7 +1036,7 @@ export default function AdminProductsPage() {
         )}
       </AnimatePresence>
 
-      {/* Modern High-End Delete Confirmation Modal */}
+      {/* Modern High-End Delete Confirmation Modal for Product */}
       <ConfirmDeleteModal
         isOpen={!!productToDelete}
         onClose={() => setProductToDelete(null)}
@@ -944,6 +1046,18 @@ export default function AdminProductsPage() {
         itemType="produit"
         description="Attention : ce produit et toutes ses formules tarifaires seront définitivement supprimés de la base de données PostgreSQL. Cette opération est irréversible."
         loading={deletingProduct}
+      />
+
+      {/* Modern High-End Delete Confirmation Modal for Formules (Tiers) */}
+      <ConfirmDeleteModal
+        isOpen={!!tierToDelete}
+        onClose={() => !deletingTier && setTierToDelete(null)}
+        onConfirm={confirmDeleteTier}
+        title="Supprimer la Formule Tarifaire"
+        itemName={tierToDelete?.name}
+        itemType="formule"
+        description="Cette formule tarifaire sera immédiatement et définitivement supprimée de la base de données PostgreSQL. Cette opération est irréversible."
+        loading={deletingTier}
       />
     </div>
   );

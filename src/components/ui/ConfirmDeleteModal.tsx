@@ -10,7 +10,7 @@ interface ConfirmDeleteModalProps {
   onConfirm: () => void | Promise<void>;
   title?: string;
   itemName?: string;
-  itemType?: "produit" | "commande" | "catégorie" | "élément" | "vente";
+  itemType?: "produit" | "commande" | "catégorie" | "élément" | "vente" | "formule";
   description?: string;
   loading?: boolean;
 }
@@ -41,7 +41,7 @@ export function ConfirmDeleteModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
           {/* Backdrop with Blur */}
           <motion.div
             initial={{ opacity: 0 }}
