@@ -208,6 +208,8 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const currentPrice = defaultPlan ? defaultPlan.priceDZD : (product.price || 0);
   const isPopular = Boolean(product.isPopular || product.isBestseller);
+  const isOutOfStock = Boolean(product.isOutOfStock) || product.inStock === false;
+  const requiresContact = Boolean(product.requiresContact);
   const subtitle = product.subtitle || product.tagline || product.categoryLabel;
 
   // Features list: take first 2 bullets
@@ -272,16 +274,30 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="flex-1 min-w-0">
             {/* Badges row */}
             <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-              {isPopular && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#00BFFF]/10 border border-[#00BFFF]/30 text-[#00BFFF]">
-                  <Crown className="w-3 h-3 text-[#00BFFF]" />
-                  <span>Populaire</span>
+              {isOutOfStock ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 border border-rose-500/40 text-rose-300 shadow-[0_0_10px_rgba(244,63,94,0.2)]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                  <span>Rupture</span>
                 </span>
-              )}
-              {product.deliveryTime && (
-                <span className="text-[10px] text-emerald-400 font-semibold hidden sm:inline">
-                  ⚡ {product.deliveryTime}
+              ) : requiresContact ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 border border-amber-500/40 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                  <span>Contact Requis</span>
                 </span>
+              ) : (
+                <>
+                  {isPopular && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#00BFFF]/10 border border-[#00BFFF]/30 text-[#00BFFF]">
+                      <Crown className="w-3 h-3 text-[#00BFFF]" />
+                      <span>Populaire</span>
+                    </span>
+                  )}
+                  {product.deliveryTime && (
+                    <span className="text-[10px] text-emerald-400 font-semibold hidden sm:inline">
+                      ⚡ {product.deliveryTime}
+                    </span>
+                  )}
+                </>
               )}
             </div>
 
@@ -327,9 +343,23 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Right: Clean View Offer indicator */}
-          <div className="px-3.5 py-1.5 rounded-full bg-white/5 group-hover:bg-[#075BDB] border border-white/10 group-hover:border-[#00BFFF]/50 text-white text-xs font-semibold flex items-center gap-1 transition-all duration-300 shadow-sm group-hover:shadow-[0_0_15px_rgba(0,191,255,0.35)] shrink-0">
-            <span className="group-hover:text-white text-silver/80">Voir l&apos;offre</span>
-            <ChevronRight className="w-3.5 h-3.5 text-cyan group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+          <div
+            className={`px-3.5 py-1.5 rounded-full border text-xs font-semibold flex items-center gap-1 transition-all duration-300 shadow-sm shrink-0 ${
+              isOutOfStock
+                ? "bg-white/5 border-white/10 text-rose-300"
+                : requiresContact
+                ? "bg-[#075BDB]/20 border-[#00BFFF]/40 text-cyan shadow-[0_0_12px_rgba(0,191,255,0.25)]"
+                : "bg-white/5 group-hover:bg-[#075BDB] border-white/10 group-hover:border-[#00BFFF]/50 text-white group-hover:shadow-[0_0_15px_rgba(0,191,255,0.35)]"
+            }`}
+          >
+            <span className={isOutOfStock ? "text-rose-300 font-semibold" : requiresContact ? "text-cyan font-bold" : "group-hover:text-white text-silver/80"}>
+              {isOutOfStock ? "Rupture" : requiresContact ? "Contacter" : "Voir l'offre"}
+            </span>
+            <ChevronRight
+              className={`w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform ${
+                isOutOfStock ? "text-rose-400" : "text-cyan group-hover:text-white"
+              }`}
+            />
           </div>
         </div>
       </Link>

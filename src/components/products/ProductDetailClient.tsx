@@ -18,6 +18,7 @@ import {
   Coins,
   CreditCard,
   Zap,
+  AlertCircle,
 } from "lucide-react";
 import { Product, SubscriptionTier } from "@/types";
 import { siteConfig } from "@/data/siteConfig";
@@ -235,8 +236,29 @@ function ProductDetailLoadedView({ product }: { product: Product }) {
     },
   ];
 
+  const isOutOfStock = Boolean(product.isOutOfStock) || product.inStock === false;
+  const requiresContact = Boolean(product.requiresContact);
+
   const scrollToOrder = () => {
+    if (requiresContact) {
+      scrollToSocials();
+      return;
+    }
+    if (isOutOfStock) return;
     orderSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  const scrollToSocials = () => {
+    const el = document.getElementById("contact-socials-section");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("ring-2", "ring-rose-500", "ring-offset-2", "ring-offset-[#0E1726]");
+      setTimeout(() => {
+        el.classList.remove("ring-2", "ring-rose-500", "ring-offset-2", "ring-offset-[#0E1726]");
+      }, 2000);
+    } else {
+      orderSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
   };
 
   const scrollToReviews = () => {
@@ -330,11 +352,28 @@ function ProductDetailLoadedView({ product }: { product: Product }) {
                 </div>
               </motion.div>
 
-              {categoryLabel && (
-                <Badge variant="cyan" size="md">
-                  {categoryLabel}
-                </Badge>
-              )}
+              <div className="flex items-center gap-2 flex-wrap justify-center">
+                {isOutOfStock ? (
+                  <Badge variant="danger" size="md" icon={<span className="w-1.5 h-1.5 rounded-full bg-rose-400" />}>
+                    Rupture de Stock
+                  </Badge>
+                ) : requiresContact ? (
+                  <Badge variant="warning" size="md" icon={<span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />}>
+                    Contact Requis
+                  </Badge>
+                ) : (
+                  categoryLabel && (
+                    <Badge variant="cyan" size="md">
+                      {categoryLabel}
+                    </Badge>
+                  )
+                )}
+                {(isOutOfStock || requiresContact) && categoryLabel && (
+                  <Badge variant="outline" size="sm">
+                    {categoryLabel}
+                  </Badge>
+                )}
+              </div>
 
               <h2 className="mt-3 text-2xl sm:text-3xl font-black text-white tracking-tight">
                 {product.name}
@@ -484,14 +523,34 @@ function ProductDetailLoadedView({ product }: { product: Product }) {
 
               {/* Actions: Direct Checkout & Quick Copy */}
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setOrderModalOpen(true)}
-                  className="px-4 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#075BDB] to-[#00BFFF] hover:from-[#064ec0] hover:to-[#00a6dd] text-white text-xs sm:text-sm font-bold shadow-[0_0_20px_rgba(0,191,255,0.4)] flex items-center gap-2 cursor-pointer transition active:scale-95"
-                >
-                  <Zap className="w-4 h-4" />
-                  <span>Commander</span>
-                </button>
+                {isOutOfStock ? (
+                  <div
+                    className="px-4 sm:px-5 py-2.5 rounded-xl bg-white/5 border border-rose-500/30 text-rose-300 text-xs sm:text-sm font-bold flex items-center gap-2 cursor-not-allowed select-none"
+                    title="Ce produit est actuellement en rupture de stock"
+                  >
+                    <AlertCircle className="w-4 h-4 text-rose-400" />
+                    <span>Rupture de Stock</span>
+                  </div>
+                ) : requiresContact ? (
+                  <button
+                    type="button"
+                    onClick={scrollToSocials}
+                    className="px-4 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#075BDB] via-cyan to-[#00BFFF] hover:from-[#064ec0] hover:to-[#00a6dd] text-white text-xs sm:text-sm font-bold shadow-[0_0_20px_rgba(0,191,255,0.4)] flex items-center gap-2 cursor-pointer transition active:scale-95 animate-pulse"
+                    title="Contactez-nous sur nos réseaux pour passer commande"
+                  >
+                    <ArrowUpRight className="w-4 h-4" />
+                    <span>Contacter pour Commander</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setOrderModalOpen(true)}
+                    className="px-4 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#075BDB] to-[#00BFFF] hover:from-[#064ec0] hover:to-[#00a6dd] text-white text-xs sm:text-sm font-bold shadow-[0_0_20px_rgba(0,191,255,0.4)] flex items-center gap-2 cursor-pointer transition active:scale-95"
+                  >
+                    <Zap className="w-4 h-4" />
+                    <span>Commander</span>
+                  </button>
+                )}
 
                 <button
                   type="button"
@@ -521,11 +580,67 @@ function ProductDetailLoadedView({ product }: { product: Product }) {
             {/* =====================================================================
                 DIRECT COMMUNICATION CHANNELS (Styled with Website Design System)
                 ===================================================================== */}
-            <div className="mt-6 pt-5 border-t border-white/10">
+            <div
+              id="contact-socials-section"
+              className={`mt-6 pt-5 border-t border-white/10 transition-all duration-300 rounded-2xl ${
+                requiresContact
+                  ? "bg-[#075BDB]/10 p-4 border border-[#00BFFF]/40 shadow-[0_0_30px_rgba(0,191,255,0.15)]"
+                  : isOutOfStock
+                  ? "bg-rose-950/20 p-4 border border-rose-500/30"
+                  : ""
+              }`}
+            >
+              {isOutOfStock ? (
+                <div className="p-3 mb-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-200 flex items-start gap-3">
+                  <div className="p-1.5 rounded-lg bg-rose-500/20 text-rose-400 shrink-0 mt-0.5">
+                    <AlertCircle className="w-4 h-4" />
+                  </div>
+                  <div className="text-xs">
+                    <p className="font-bold text-rose-200 uppercase tracking-wide">
+                      Produit Momentanément en Rupture de Stock
+                    </p>
+                    <p className="mt-1 text-silver/80 leading-relaxed">
+                      Ce produit est actuellement épuisé. Nos équipes travaillent au réapprovisionnement.
+                    </p>
+                  </div>
+                </div>
+              ) : requiresContact ? (
+                <div className="p-3.5 mb-4 rounded-xl bg-[#00BFFF]/10 border border-[#00BFFF]/30 text-white flex items-start gap-3">
+                  <div className="p-1.5 rounded-lg bg-[#00BFFF]/20 text-cyan shrink-0 mt-0.5">
+                    <Zap className="w-4 h-4" />
+                  </div>
+                  <div className="text-xs">
+                    <p className="font-bold text-cyan uppercase tracking-wide flex items-center gap-2">
+                      <span>Contact Obligatoire Avant Commande</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan/20 border border-cyan/40 text-cyan">
+                        Commande via réseaux
+                      </span>
+                    </p>
+                    <p className="mt-1 text-silver/90 leading-relaxed">
+                      Pour ce produit, <strong className="text-white">veuillez nous contacter obligatoirement sur l&apos;un de nos réseaux ci-dessous</strong> afin de finaliser votre commande avec notre équipe.
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+
               <div className="flex items-center gap-2 mb-3">
-                <span className="h-2 w-2 rounded-full bg-cyan animate-pulse" />
-                <h3 className="text-xs sm:text-sm font-bold text-white tracking-tight">
-                  Contactez-nous sur l&apos;un de nos réseaux pour passer commande :
+                <span
+                  className={`h-2.5 w-2.5 rounded-full ${
+                    requiresContact
+                      ? "bg-cyan animate-ping"
+                      : isOutOfStock
+                      ? "bg-rose-500"
+                      : "bg-cyan animate-pulse"
+                  }`}
+                />
+                <h3
+                  className={`text-xs sm:text-sm font-bold tracking-tight ${
+                    requiresContact ? "text-cyan font-black" : isOutOfStock ? "text-rose-200" : "text-white"
+                  }`}
+                >
+                  {requiresContact
+                    ? "Contactez-nous obligatoirement sur nos réseaux pour passer commande :"
+                    : "Contactez-nous sur l'un de nos réseaux :"}
                 </h3>
               </div>
 
@@ -661,14 +776,30 @@ function ProductDetailLoadedView({ product }: { product: Product }) {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={scrollToOrder}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#075BDB] to-[#00BFFF] text-white text-xs font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(0,191,255,0.4)] active:scale-95 cursor-pointer"
-          >
-            <Zap className="h-3.5 w-3.5 fill-current" />
-            <span>Commander</span>
-          </button>
+          {isOutOfStock ? (
+            <div className="px-4 py-2.5 rounded-xl bg-white/5 border border-rose-500/30 text-rose-300 text-xs font-bold flex items-center gap-1.5 cursor-not-allowed select-none">
+              <AlertCircle className="h-3.5 w-3.5 text-rose-400" />
+              <span>Rupture</span>
+            </div>
+          ) : requiresContact ? (
+            <button
+              type="button"
+              onClick={scrollToSocials}
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#075BDB] via-cyan to-[#00BFFF] text-white text-xs font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(0,191,255,0.4)] active:scale-95 cursor-pointer animate-pulse"
+            >
+              <ArrowUpRight className="h-3.5 w-3.5" />
+              <span>Contacter</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={scrollToOrder}
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#075BDB] to-[#00BFFF] text-white text-xs font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(0,191,255,0.4)] active:scale-95 cursor-pointer"
+            >
+              <Zap className="h-3.5 w-3.5 fill-current" />
+              <span>Commander</span>
+            </button>
+          )}
 
           <a
             href={instagramUrl}

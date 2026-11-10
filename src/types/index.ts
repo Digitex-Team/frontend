@@ -52,6 +52,8 @@ export interface Product {
   reviewsCount?: number;
   deliveryTime?: string; // e.g. "5 - 15 minutes"
   inStock?: boolean;
+  isOutOfStock?: boolean;
+  requiresContact?: boolean;
   warranty?: string; // e.g. "Garantie officielle"
   plans?: SubscriptionTier[];
   activationSteps?: string[];

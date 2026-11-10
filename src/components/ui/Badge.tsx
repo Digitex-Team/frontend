@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: "cyan" | "electric" | "silver" | "success" | "warning" | "outline";
+  variant?: "cyan" | "electric" | "silver" | "success" | "warning" | "danger" | "outline";
   size?: "sm" | "md";
   className?: string;
   icon?: React.ReactNode;
@@ -27,6 +27,7 @@ export function Badge({
     silver: "bg-navy-light/60 text-silver border border-navy-border",
     success: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.15)]",
     warning: "bg-amber-500/10 text-amber-300 border border-amber-500/30",
+    danger: "bg-rose-500/15 text-rose-300 border border-rose-500/40 shadow-[0_0_12px_rgba(244,63,94,0.2)]",
     outline: "bg-transparent text-silver border border-white/10",
   };
 

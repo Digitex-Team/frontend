@@ -65,6 +65,8 @@ export default function AdminProductsPage() {
   const [formImage, setFormImage] = useState("/chatgpt.png");
   const [formIsPopular, setFormIsPopular] = useState(false);
   const [formIsActive, setFormIsActive] = useState(true);
+  const [formIsOutOfStock, setFormIsOutOfStock] = useState(false);
+  const [formRequiresContact, setFormRequiresContact] = useState(false);
   const [formFeatures, setFormFeatures] = useState("");
   const [formDeliveryTime, setFormDeliveryTime] = useState("5 - 15 minutes");
   const [formWarranty, setFormWarranty] = useState("Garantie officielle");
@@ -161,6 +163,8 @@ export default function AdminProductsPage() {
     setFormImage("");
     setFormIsPopular(false);
     setFormIsActive(true);
+    setFormIsOutOfStock(false);
+    setFormRequiresContact(false);
     setFormFeatures("Accès complet\nGarantie de remplacement");
     setFormDeliveryTime("5 - 15 minutes");
     setFormWarranty("Garantie officielle");
@@ -183,6 +187,8 @@ export default function AdminProductsPage() {
     setFormImage(p.image || "");
     setFormIsPopular(Boolean(p.isPopular));
     setFormIsActive(Boolean(p.isActive));
+    setFormIsOutOfStock(Boolean(p.isOutOfStock));
+    setFormRequiresContact(Boolean(p.requiresContact));
     setFormFeatures((p.features || []).join("\n"));
     setFormDeliveryTime(p.deliveryTime || "5 - 15 minutes");
     setFormWarranty(p.warranty || "Garantie officielle");
@@ -282,6 +288,8 @@ export default function AdminProductsPage() {
           image: formImage || "/logo.png",
           isPopular: formIsPopular,
           isActive: formIsActive,
+          isOutOfStock: formIsOutOfStock,
+          requiresContact: formRequiresContact,
           features: featuresArray,
           tiers: formTiers.map((t) => ({
             id: t.id,
@@ -307,6 +315,8 @@ export default function AdminProductsPage() {
           image: formImage || "/logo.png",
           isPopular: formIsPopular,
           isActive: formIsActive,
+          isOutOfStock: formIsOutOfStock,
+          requiresContact: formRequiresContact,
           features: featuresArray,
           tiers: formTiers.map((t) => ({
             durationName: t.durationName,
@@ -340,6 +350,34 @@ export default function AdminProductsPage() {
       alert(err.response?.data?.message || "Impossible de supprimer ce produit");
     } finally {
       setDeletingProduct(false);
+    }
+  };
+
+  const handleToggleStock = async (prod: any) => {
+    try {
+      const nextOutOfStock = !Boolean(prod.isOutOfStock);
+      // Optimistic update
+      setProducts((prev) =>
+        prev.map((item) => (item.id === prod.id ? { ...item, isOutOfStock: nextOutOfStock } : item))
+      );
+      await adminUpdateProduct(prod.id, { isOutOfStock: nextOutOfStock });
+    } catch (err: any) {
+      alert("Erreur lors de la mise à jour du statut de stock : " + (err.response?.data?.message || err.message));
+      fetchProductsList(page, search, selectedCategory);
+    }
+  };
+
+  const handleToggleRequiresContact = async (prod: any) => {
+    try {
+      const nextRequiresContact = !Boolean(prod.requiresContact);
+      // Optimistic update
+      setProducts((prev) =>
+        prev.map((item) => (item.id === prod.id ? { ...item, requiresContact: nextRequiresContact } : item))
+      );
+      await adminUpdateProduct(prod.id, { requiresContact: nextRequiresContact });
+    } catch (err: any) {
+      alert("Erreur lors de la mise à jour du mode de contact : " + (err.response?.data?.message || err.message));
+      fetchProductsList(page, search, selectedCategory);
     }
   };
 
@@ -550,20 +588,71 @@ export default function AdminProductsPage() {
                     </td>
 
                     <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`w-2 h-2 rounded-full ${
-                            prod.isActive ? "bg-emerald-400" : "bg-silver/40"
-                          }`}
-                        />
-                        <span className="text-silver/80">
-                          {prod.isActive ? "Actif" : "Inactif"}
-                        </span>
-                        {prod.isPopular && (
-                          <span className="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30 ml-1">
-                            Top
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span
+                            className={`w-2 h-2 rounded-full ${
+                              prod.isActive ? "bg-emerald-400" : "bg-silver/40"
+                            }`}
+                          />
+                          <span className="text-silver/80">
+                            {prod.isActive ? "Actif" : "Inactif"}
                           </span>
-                        )}
+                          {prod.isPopular && (
+                            <span className="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30">
+                              Top
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Status Toggles: Stock & Contact Mode */}
+                        <div className="flex flex-col gap-1">
+                          {/* 1. Stock Status Toggle */}
+                          {prod.isOutOfStock ? (
+                            <button
+                              type="button"
+                              onClick={() => handleToggleStock(prod)}
+                              className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 flex items-center gap-1.5 cursor-pointer transition shadow-[0_0_10px_rgba(244,63,94,0.2)]"
+                              title="Cliquer pour remettre En Stock"
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
+                              <span>Rupture de Stock</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleToggleStock(prod)}
+                              className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 hover:bg-emerald-500/20 flex items-center gap-1.5 cursor-pointer transition"
+                              title="Cliquer pour marquer en Rupture de Stock"
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                              <span>En Stock</span>
+                            </button>
+                          )}
+
+                          {/* 2. Contact Mode Toggle */}
+                          {prod.requiresContact ? (
+                            <button
+                              type="button"
+                              onClick={() => handleToggleRequiresContact(prod)}
+                              className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 flex items-center gap-1.5 cursor-pointer transition shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+                              title="Cliquer pour repasser en Commande Directe"
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                              <span>Contact Réseaux</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleToggleRequiresContact(prod)}
+                              className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/5 text-silver/60 border border-white/10 hover:bg-white/10 hover:text-white flex items-center gap-1.5 cursor-pointer transition"
+                              title="Cliquer pour obliger le contact via réseaux sociaux avant commande"
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-cyan" />
+                              <span>Commande Directe</span>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </td>
 
@@ -997,7 +1086,7 @@ export default function AdminProductsPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center gap-6 pt-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
                   <CustomCheckbox
                     checked={formIsPopular}
                     onChange={setFormIsPopular}
@@ -1010,6 +1099,20 @@ export default function AdminProductsPage() {
                     onChange={setFormIsActive}
                     label="Actif dans le catalogue"
                     description="Visible pour tous les clients"
+                  />
+
+                  <CustomCheckbox
+                    checked={formIsOutOfStock}
+                    onChange={setFormIsOutOfStock}
+                    label="Rupture de Stock (Out of Stock)"
+                    description="Indique que le produit est épuisé et bloque la commande"
+                  />
+
+                  <CustomCheckbox
+                    checked={formRequiresContact}
+                    onChange={setFormRequiresContact}
+                    label="Contacter avant d'acheter (Réseaux)"
+                    description="Désactive le bouton Commander et redirige vers vos réseaux"
                   />
                 </div>
 
